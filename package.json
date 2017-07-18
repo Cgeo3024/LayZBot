@@ -1,0 +1,20 @@
+{
+  "name": "layz_dnd",
+  "version": "1.0.0",
+  "description": "Helper Bot for our DnD Channel",
+  "main": "bot.js",
+  "author": "Alt+F7",
+  "dependencies": {
+    "discord.io": "^2.5.1",
+    "winston": "^2.3.1",
+    "mongojs": "^2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC",
+  "engines": {
+    "node":"4.4.7"
+  }
+}
