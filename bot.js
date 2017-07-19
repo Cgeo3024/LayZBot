@@ -49,19 +49,18 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               });
             break;
             case 2:
-              handleGeneric(null, channelID, lookup.everyone, embed.AllUsers);
+              handleQuery(null, channelID, lookup.everyone, embed.AllUsers);
             break;
             case 3:
-              handleGeneric(user, channelID, lookup.self, embed.self);
+              handleQuery(user, channelID, lookup.self, embed.self);
             break;
             case 4:
-              handleGeneric(values, channelID, lookup.other, embed.other);
+              handleQuery(values, channelID, lookup.other, embed.other);
             break;
             case 5:
               handleUpdate(user, values, channelID);
             break;
           }
-
         });
      }
 });
@@ -76,12 +75,11 @@ function handleUpdate(user, content, channelID){
     else {
       embed = {description: "Your details have been successfully registered!", color: 3066993}
     }
-
     sendEmbed(embed, channelID);
   });
 }
 
-function handleGeneric(name, channelID, query, embed)
+function handleQuery(name, channelID, query, embed)
 {
   bot.sendMessage({ to:channelID, message: "Accessing Database..."});
   query(name, function(msg){

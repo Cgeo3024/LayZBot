@@ -4,7 +4,9 @@ var mongojs = require("mongojs");
 var db = mongojs(config.dburi, ["users"]);
 var mycollection = db.collection('users');
 
-var lookupEveryone = function(callback){
+
+
+var lookupEveryone = function(user, callback){
   var msg = [];
   db.users.find(function(err, docs) {
     for (d in docs)
@@ -19,10 +21,16 @@ var lookupEveryone = function(callback){
   });
 }
 
+var deleteUser = function(name, callback){
+  db.users.remove({user: name}, function(error, value){
+    callback(value, error);
+  });
+};
+
 var singleLookUp = function (name, callback){
   //console.log("looking up " + name );
   db.users.find({user_lower : name.toLowerCase()}, function (err, r){
-    callback(r);
+    callback(r, err);
   });
 }
 
@@ -60,7 +68,8 @@ var performUpdate = function(update, user, callback)
   });
 }
 
-exports.self = singleLookUp;
-exports.everyone = lookupEveryone;
-exports.other = singleLookUp;
-exports.update = performUpdate;
+exports.deleteUser  = deleteUser
+exports.self        = singleLookUp;
+exports.everyone    = lookupEveryone;
+exports.other       = singleLookUp;
+exports.update      = performUpdate;

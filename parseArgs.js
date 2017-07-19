@@ -9,7 +9,6 @@ var initialParse = function(raw, callback)
         3   | show the details of calling users
         4   | show the details of a named user
         5   | update the details of the calling user
-
   */
   var content;
 
@@ -105,7 +104,7 @@ function repairName(arr, index)
 {
 
   var name = arr[index];
-    var i = index +1;
+  var i = index +1;
   while (i < arr.length)
   {
     name += " " + arr[i];
@@ -182,10 +181,6 @@ function parseWho(verb, offset, argVals)
       eventID = 0;
       content = "Oops! you're missing a name or a verb! Please try again and provide a name, or use the --everyone or --me flag";
     }
-
-    //console.log("leaving here with these settings");
-    //console.log(eventID);
-    //console.log(content);
     return {eid:eventID, content:content};
 }
 

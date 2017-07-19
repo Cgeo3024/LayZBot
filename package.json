@@ -17,6 +17,6 @@
   },
   "license": "ISC",
   "engines": {
-    "node": "4.4.7"
+    "node": "6.11.1"
   }
 }
