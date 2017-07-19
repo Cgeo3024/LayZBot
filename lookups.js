@@ -58,11 +58,12 @@ var performUpdate = function(update, user, callback)
 
     }
     else {
-      db.users.save({user: user, user_lower : user.toLowerCase}, function(){
-        modify(update, user, function(){
-          console.log("New User Added");
-          callback(false);
-        });
+      update.user = user;
+      update.user_lower : user.toLowerCase();
+      console.log(update);
+      db.users.save(update, function(){
+        console.log("New User Added");
+        callback(false);
       });
     }
   });
