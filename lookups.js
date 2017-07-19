@@ -59,7 +59,7 @@ var performUpdate = function(update, user, callback)
     }
     else {
       update.user = user;
-      update.user_lower : user.toLowerCase();
+      update.user_lower = user.toLowerCase();
       console.log(update);
       db.users.save(update, function(){
         console.log("New User Added");
