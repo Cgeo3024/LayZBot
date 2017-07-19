@@ -49,13 +49,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               });
             break;
             case 2:
-              handleAll(channelID);
+              handleGeneric(null, channelID, lookup.everyone, embed.AllUsers);
             break;
             case 3:
-              handleSelf(user, channelID);
+              handleGeneric(user, channelID, lookup.self, embed.self);
             break;
             case 4:
-              handleOther(values, channelID);
+              handleGeneric(values, channelID, lookup.other, embed.other);
             break;
             case 5:
               handleUpdate(user, values, channelID);
@@ -81,41 +81,18 @@ function handleUpdate(user, content, channelID){
   });
 }
 
-function handleSelf(user, channelID){
-  //console.log("printing users' own info");
+function handleGeneric(name, channelID, query, embed)
+{
   bot.sendMessage({ to:channelID, message: "Accessing Database..."});
-  lookup.self(user, function(result){
-      embed.self(result, function(embed){
-          sendEmbed(embed, channelID);
-      });
-  });
-};
-
-function handleAll(channelID){
-  //console.log("printing ALL users' info");
-  bot.sendMessage({ to:channelID, message: "Accessing Database..."});
-  lookup.everyone(function(result){
-    embed.allUsers(result, function(embed){
+  query(name, function(msg){
+    embed(msg, function(embed){
       sendEmbed(embed, channelID);
-
     });
   });
-};
-function handleOther(name, channelID){
-  bot.sendMessage({ to:channelID, message: "Accessing Database..."});
-  lookup.other(name, function(msg){
-      embed.other(msg, function(embed){
-        sendEmbed(embed, channelID);
-      });
-  });
-};
+}
 var sendEmbed = function(embed, channelID){
-  //console.log("I received:");
-  //console.log(embed);
-
   bot.sendMessage({
       to: channelID,
       embed:embed
     });
-    //console.log("printing Done");
 };

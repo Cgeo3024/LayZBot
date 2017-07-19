@@ -18,10 +18,6 @@ var msg = " "
 + "?w --m             == ?Who is --me\n"
 + "?w --e             == ?Who is --everyone```"
 
-
-
-
-
 DEFAULT: 0,
 AQUA: 1752220,
 GREEN: 3066993,

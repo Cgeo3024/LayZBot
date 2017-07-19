@@ -24,8 +24,6 @@ var other = function(user, callback){
 };
 
 var self = function(user, callback){
-  //console.log("formatting");
-  //console.log(user);
   var embed
   if (user.length < 1)
   {
@@ -36,7 +34,6 @@ var self = function(user, callback){
     embed = {title: user[0].user, description : msg, color:randomColor()};
   }
 
-  //console.log(embed);
   callback(embed);
 };
 

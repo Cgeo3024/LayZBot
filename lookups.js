@@ -7,7 +7,6 @@ var mycollection = db.collection('users');
 var lookupEveryone = function(callback){
   var msg = [];
   db.users.find(function(err, docs) {
-    //console.log(err);
     for (d in docs)
     {
       msg[d] = [];
@@ -15,7 +14,7 @@ var lookupEveryone = function(callback){
       msg[d][1] = docs[d].name;
       msg[d][2] = docs[d].link;
     }
-    callback(msg);
+    callback(msg, err);
 
   });
 }
@@ -23,9 +22,6 @@ var lookupEveryone = function(callback){
 var singleLookUp = function (name, callback){
   //console.log("looking up " + name );
   db.users.find({user_lower : name.toLowerCase()}, function (err, r){
-    //console.log("discovered ");
-    //console.log(r);
-    //console.log(err);
     callback(r);
   });
 }
@@ -39,7 +35,6 @@ var modify = function(update, user, callback)
     callback();
   });
 }
-
 
 var performUpdate = function(update, user, callback)
 {
