@@ -74,6 +74,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 });
 
 function recallInitiative(channelID, sparse){
+  bot.sendMessage({ to:channelID, message: "Reading my notes..."});
   initManager.recall(function(inits){
     console.log(inits);
     if(inits == null)
@@ -94,6 +95,7 @@ function recallInitiative(channelID, sparse){
 }
 
 function rerollInitiative(channelID){
+  bot.sendMessage({ to:channelID, message: "Rollling for Initative!"});
   initManager.reroll(function(){
     console.log("Now recalling initiative");
     recallInitiative(channelID, false);
