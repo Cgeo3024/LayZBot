@@ -9,6 +9,8 @@ var initialParse = function(raw, callback)
         3   | show the details of calling users
         4   | show the details of a named user
         5   | update the details of the calling user
+        6   | recall initiative
+        7   | roll initiative
   */
   var content;
 
@@ -43,6 +45,26 @@ var initialParse = function(raw, callback)
       var sub = parseWho(true, 2, argVals);
       eventID = sub.eid;
       content = sub.content;
+    break;
+    case 'r':
+      // recall initiative
+      if (argVals.length > 1)
+      {
+        console.log(argVals);
+        switch(argVals[1][0].toLowerCase()) {
+
+          case('r'):
+            eventID = 7;
+            break;
+          case('s'):
+            eventID = 6;
+            content = true;
+            break;
+        }
+      } else {
+        eventID = 6;
+        content = false;
+      }
     break;
     case 'i':
       if (argVals.length < 2)

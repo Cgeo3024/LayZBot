@@ -4,8 +4,6 @@ var mongojs = require("mongojs");
 var db = mongojs(config.dburi, ["users"]);
 var mycollection = db.collection('users');
 
-
-
 var lookupEveryone = function(user, callback){
   var msg = [];
   db.users.find(function(err, docs) {
@@ -15,6 +13,7 @@ var lookupEveryone = function(user, callback){
       msg[d][0] = docs[d].user;
       msg[d][1] = docs[d].name;
       msg[d][2] = docs[d].link;
+      msg[d][3] = docs[d].init;
     }
     callback(msg, err);
 

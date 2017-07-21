@@ -24,7 +24,7 @@ var other = function(user, callback){
 };
 
 var self = function(user, callback){
-  var embed
+  var embed;
   if (user.length < 1)
   {
     embed = {description : "Sorry, I couldn't find you in my records!", color:15158332}
@@ -36,6 +36,63 @@ var self = function(user, callback){
 
   callback(embed);
 };
+
+var inits = function(inits, callback){
+  //var padded = pad(msg);
+  console.log(inits);
+  var str = "";
+  for (var i = 0; i < inits.length; i++)
+  {
+    str += inits[i].name + " rolled " + inits[i].roll + " " + (inits[i].bonus||"+0") + " **Total** : " +inits[i].init;
+    str += "\n\n"
+  }
+  var embed = {title: "Initiatives", description : str, color:randomColor() };
+  callback(embed);
+}
+
+var initsSparse = function(inits, callback){
+
+  var names = [];
+  for (var i = 0; i < inits.length; i++)
+  {
+    names.push(inits[i].name);
+  }
+
+  var L = longestName(names);
+  var str = "```";
+
+  console.log(names);
+  for (var i = 0; i < names.length; i++)
+  {
+    while(names[i].length < L)
+    {
+      names[i] += " ";
+    }
+  }
+  console.log(names);
+  for (var i = 0; i < inits.length; i++)
+  {
+    console.log(names[i]);
+    str += names[i] + " : " +inits[i].init +"\n";
+
+  }
+  str += "```"
+  var embed = {title: "Initiatives", description : str, color:randomColor() };
+  callback(embed);
+}
+
+var longestName = function(names){
+  var longest = 0;
+  for (var i = 0; i < names.length;i++)
+  {
+    if (names[i].length > longest)
+    {
+      longest = names[i].length;
+    }
+
+  }
+  return longest;
+}
 
 var error = function(){};
 
@@ -87,3 +144,5 @@ exports.allUsers = allUsers;
 exports.self = self;
 exports.other = other;
 exports.help = showHelp;
+exports.inits = inits;
+exports.initsSparse = initsSparse;

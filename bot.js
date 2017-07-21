@@ -1,9 +1,10 @@
-var Discord = require('discord.io');
-var logger = require('winston');
-var lookup = require('./lookups.js');
-var config = require('./config.js');
-var embed = require('./formatEmbed.js');
-var parseArgs = require('./parseArgs.js')
+var Discord     = require('discord.io');
+var logger      = require('winston');
+var lookup      = require('./lookups.js');
+var config      = require('./config.js');
+var embed       = require('./formatEmbed.js');
+var parseArgs   = require('./parseArgs.js')
+var initManager = require('./initManager.js');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -49,7 +50,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               });
             break;
             case 2:
-              handleQuery(null, channelID, lookup.everyone, embed.AllUsers);
+              handleQuery(" ", channelID, lookup.everyone, embed.allUsers);
             break;
             case 3:
               handleQuery(user, channelID, lookup.self, embed.self);
@@ -60,10 +61,44 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 5:
               handleUpdate(user, values, channelID);
             break;
+            case 6:
+              //content will be "true" for sparse, or "false" for verbose
+              recallInitiative(channelID, values);
+            break;
+            case 7:
+              rerollInitiative(channelID);
+            break;
           }
         });
      }
 });
+
+function recallInitiative(channelID, sparse){
+  initManager.recall(function(inits){
+    console.log(inits);
+    if(inits == null)
+    {
+      sendEmbed({title:"error", description:"No inits Set", color: 15158332}, channelID);
+      return -1;
+    }
+    if(sparse){
+      embed.initsSparse(inits, function(embed){
+        sendEmbed(embed, channelID);
+      });
+    } else {
+      embed.inits(inits, function(embed){
+        sendEmbed(embed, channelID);
+      });
+    }
+  });
+}
+
+function rerollInitiative(channelID){
+  initManager.reroll(function(){
+    console.log("Now recalling initiative");
+    recallInitiative(channelID, false);
+  });
+}
 
 function handleUpdate(user, content, channelID){
   lookup.update(content, user, function(updated){
@@ -81,6 +116,7 @@ function handleUpdate(user, content, channelID){
 
 function handleQuery(name, channelID, query, embed)
 {
+  console.log(embed);
   bot.sendMessage({ to:channelID, message: "Accessing Database..."});
   query(name, function(msg){
     embed(msg, function(embed){
