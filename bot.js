@@ -74,7 +74,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 });
 
 function recallInitiative(channelID, sparse){
-  bot.sendMessage({ to:channelID, message: "Reading my notes..."});
   initManager.recall(function(inits){
     console.log(inits);
     if(inits == null)
