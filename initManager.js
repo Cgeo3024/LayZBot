@@ -16,25 +16,20 @@ var forgetInit = function(callback){
 
 var initInit = function(callback){
   inits = [];
-  if (!loaded){
-    lookup.everyone(null, function(result, err){
-      console.log ("Lookup values:");
-      console.log(result);
-      console.log(err);
-      for (var i =0; i < result.length; i++)
-      {
-        inits.push({user:result[i][0], name:result[i][1], roll: null, init: null, bonus:result[i][3]});
-      }
-      loaded = true;
-      set = true;
-      console.log("Finished loading all inits");
-      console.log(inits);
-      callback(true);
-    });
-
-  } else {
-    callback(false);
-  }
+  lookup.everyone(null, function(result, err){
+    console.log ("Lookup values:");
+    console.log(result);
+    console.log(err);
+    for (var i =0; i < result.length; i++)
+    {
+      inits.push({user:result[i][0], name:result[i][1], roll: null, init: null, bonus:result[i][3]});
+    }
+    loaded = true;
+    set = true;
+    console.log("Finished loading all inits");
+    console.log(inits);
+    callback(true);
+  });
 }
 
 function random20(){
@@ -60,8 +55,8 @@ var rolleOne = function(user, callback){
 }
 
 // rolls the init values of all players
-var rollAll = function(callback){
-  if(!set){
+var rollAll = function(deep, callback){
+  if(!set || deep){
     initInit(function(r){
       for (var i = 0; i < inits.length; i++)
       {
@@ -83,7 +78,7 @@ var rollAll = function(callback){
       inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
     }
     console.log("Finished rolling inits from the rollAll function");
-    console.log(inits);
+    //console.log(inits);
     callback(true);
   }
 }

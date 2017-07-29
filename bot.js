@@ -66,14 +66,17 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               recallInitiative(channelID, values);
             break;
             case 7:
-              rerollInitiative(channelID);
+              //values will be true for a deep recall IE reload from DB, or false for a light one
+              console.log("case 7 values");
+              console.log(values);
+              rerollInitiative(channelID, values);
             break;
           }
         });
      }
 });
 
-function recallInitiative(channelID, sparse){
+function recallInitiative(channelID, verbose){
   initManager.recall(function(inits){
     console.log(inits);
     if(inits == null)
@@ -81,7 +84,7 @@ function recallInitiative(channelID, sparse){
       sendEmbed({title:"error", description:"No inits Set", color: 15158332}, channelID);
       return -1;
     }
-    if(sparse){
+    if(!verbose){
       embed.initsSparse(inits, function(embed){
         sendEmbed(embed, channelID);
       });
@@ -93,11 +96,11 @@ function recallInitiative(channelID, sparse){
   });
 }
 
-function rerollInitiative(channelID){
+function rerollInitiative(channelID, deep){
   bot.sendMessage({ to:channelID, message: "Rollling for Initative!"});
-  initManager.reroll(function(){
+  initManager.reroll(deep, function(){
     console.log("Now recalling initiative");
-    recallInitiative(channelID, false);
+    recallInitiative(channelID, true);
   });
 }
 

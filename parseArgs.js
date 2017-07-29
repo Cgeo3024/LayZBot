@@ -55,8 +55,13 @@ var initialParse = function(raw, callback)
 
           case('r'):
             eventID = 7;
+            content = false;
             break;
-          case('s'):
+          case('d'):
+            eventID = 7;
+            content = true;
+            break;
+          case('v'):
             eventID = 6;
             content = true;
             break;
