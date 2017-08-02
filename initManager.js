@@ -1,31 +1,32 @@
 var lookup = require('./lookups.js');
-var inits = [{user: "alt+f7", name:"Lady Agatha Cherrybrook", bonus:"+0"},
-              {user:"ulin207", name:"Phillia", bonus:"+3"}];
+var inits = [];
+var entities = [];
+var orderedInits = [];
+
 var set = false;
 var loaded = false;
+var ordered = false;
 // resets the init bonuses
 var forgetInit = function(callback){
   set = false;
   loaded = false;
-  for (i in inits)
-  {
-    inits[i].init = null;
-    inits[i].roll = null;
-  }
+  ordered = false;
+  orderedInits = [];
+  inits = [];
 }
 
 var initInit = function(callback){
   inits = [];
+  entities = [];
   lookup.everyone(null, function(result, err){
     console.log ("Lookup values:");
     console.log(result);
     console.log(err);
     for (var i =0; i < result.length; i++)
     {
-      inits.push({user:result[i][0], name:result[i][1], roll: null, init: null, bonus:result[i][3]});
+      entities.push({user:result[i][0], name:result[i][1], bonus:result[i][3]});
     }
     loaded = true;
-    set = true;
     console.log("Finished loading all inits");
     console.log(inits);
     callback(true);
@@ -36,10 +37,54 @@ function random20(){
   return (Math.floor(Math.random() * 20) + 1);
 }
 
-// rolls the init values of the calling player
-var rolleOne = function(user, callback){
+//var forgetOneUser = function
+
+
+var rollOneChar = function(name, callback){
   // look for the user
-  for (i in inits){
+  /*for (i in inits){
+    if (inits[i].name.toLowerCase() == name.toLowerCase())
+    {
+
+      // after we find the user we perform their roll
+      var roll = random20();
+      inits[i].init = roll + parseInt(inits[i].bonus);
+      inits[i].roll = roll;
+      callback({roll: roll, bonus: inits[i].bonus})
+    }
+  }*/
+
+  var i = inits.findIndex(init => init.name.toLowerCase() == name.toLowerCase());
+  console.log(i + " Is the location of " + name + " in :\n");
+  console.log(inits);
+  // if we can't find this user check character names
+  if (i > -1){
+    var roll = random20();
+    inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
+    inits[i].roll = roll;
+    callback({roll: roll, bonus: inits[i].bonus})
+  }
+  callback(null);
+}
+
+// rolls the init values of the calling player
+var rollOneUser = function(user, callback){
+  // look for the user
+
+  var i = inits.findIndex(init => init.user.toLowerCase() == user.toLowerCase());
+  console.log(i + " Is the location of " + user + " in :\n");
+  console.log(inits);
+  // if we can't find this user check character names
+
+  if (i > -1){
+    var roll = random20();
+    inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
+    inits[i].roll = roll;
+    callback({roll: roll, bonus: inits[i].bonus})
+    return 0;
+  }
+
+  /*for (i in inits){
     if (inits[i].user.toLowerCase() == user.toLowerCase())
     {
 
@@ -49,38 +94,151 @@ var rolleOne = function(user, callback){
       inits[i].roll = roll;
       callback({roll: roll, bonus: inits[i].bonus})
     }
-  }
-  // if we can't find this user return null
-  callback(null);
+  }*/
+  // if we can't find this user check character names
+  rollOneChar(user, callback);
+
 }
 
 // rolls the init values of all players
 var rollAll = function(deep, callback){
-  if(!set || deep){
+  forgetInit();
+  loaded = true;
+  set = true;
+  //if(!loaded || deep){
     initInit(function(r){
-      for (var i = 0; i < inits.length; i++)
+      console.log("Rerolled for entitites");
+      console.log(entities);
+      for (var i = 0; i < entities.length; i++)
       {
-
+        var e = {user:entities[i].user, name:entities[i].name};
         var roll = random20();
-        inits[i].roll = roll;
-        inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
+
+        e.roll = roll;
+        e.bonus = parseInt(entities[i].bonus) ? entities[i].bonus : "+0";
+        e.init = roll + parseInt(e.bonus);
+        inits.push(e);
       }
       console.log("Finished rolling inits from the rollAll function -- fresh");
       console.log(inits);
       callback(true);
 
     });
-  } else {
-    for (var i = 0; i < inits.length; i++)
+  /*} else {
+    for (var i = 0; i < entities.length; i++)
     {
-      var roll = Math.floor(Math.random() * 20) + 1;
-      inits[i].roll = roll;
-      inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
+      var e = {user:entities[i].user, name:entities[i].name};
+      var roll = random20();
+
+      e.roll = roll;
+      e.bonus = entities[i].bonus;
+      inits.push(e);
     }
     console.log("Finished rolling inits from the rollAll function");
-    //console.log(inits);
+    console.log(inits);
     callback(true);
+  } */
+}
+
+var orderInits = function(){
+  for (var i = 0; i < inits.length; i++)
+  {
+    var j = 0;
+
+    // any players *not* participating should be listed last
+    if (inits[i].init == null)
+    {
+      orderedInits.push(inits[i]);
+      continue;
+    }
+
+    for(; j < orderedInits.length; j++)
+    {
+      if (orderedInits[j].init == null){
+        break;
+      }
+      if (parseInt(inits[i].init) > parseInt(orderedInits[j].init)){
+        break;
+      }
+      // randomly positions this element relative to the one with identical initiative
+      if (parseInt(inits[i].init) == parseInt(orderedInits[j].init)){
+        j += Math.floor(Math.random() * 2);
+        break;
+      }
+    }
+
+    orderedInits.splice(j, 0, inits[i]);
   }
+  ordered = true;
+  return true;
+}
+
+var insert = function(name, bonus, callback)
+{
+  console.log("adding new Entity");
+  for (var i = 0; i < inits.length; i++)
+  {
+    if (inits[i].name.toLowerCase() == name.toLowerCase())
+    {
+      callback(-1);
+      return;
+    }
+  }
+
+  var roll = random20();
+  var nuBonus = parseInt(bonus) ? bonus : "+0";
+  var total = parseInt(nuBonus) + roll;
+  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ", })
+
+  if (ordered)
+  {
+    var j = 0;
+    for(; j < orderedInits.length; j++)
+    {
+      if (orderedInits[j].init == null){
+        break;
+      }
+      if (total > parseInt(orderedInits[j].init)){
+        break;
+      }
+      // randomly positions this element relative to the one with identical initiative
+      if (total == parseInt(orderedInits[j].init)){
+        j += Math.floor(Math.random() * 2);
+        break;
+      }
+    }
+
+    orderedInits.splice(j, 0, {name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ", });
+  }
+  callback(0);
+}
+
+/*
+* Replaces existing roll in ordered inits with argVals
+* Returns error codes:
+* 0 when no error
+* 1 when inits are not currently set
+* 2 when selected name is not found
+*/
+var overwrite = function(name, roll, callback){
+  if(!set)
+  {
+    callback(1);
+    return;
+  }
+  var overwrote = false;
+  var j = 0;
+  for(; j < orderedInits.length; j++)
+  {
+    if (orderedInits[j].name.toLowerCase() == name.toLowerCase()){
+      orderedInits[j].roll = roll;
+      orderedInits[j].init = (parseInt(roll) || 0) + parseInt(orderedInits[j].bonus);
+      overwrote = true;
+    }
+
+  }
+
+  callback(overwrote ? 0 : 2);
 }
 
 //returns the current init values
@@ -97,35 +255,18 @@ var recallRolls = function(callback){
     return -1;
   }
 
-  var orderedArray = [];
-  orderedArray.push(inits[0]);
-  for (var i = 1; i < inits.length; i++){
-
-    var j = 0;
-
-    // any players *not* participating should be listed last
-    if (inits[i].init == null)
-    {
-      orderedArray.push(inits[i]);
-      continue;
-    }
-
-    for(; j < orderedArray.length; j++)
-    {
-      if (orderedArray[j].init == null){
-        break;
-      }
-      if (inits[i].init > orderedArray[j].init){
-        break;
-      }
-    }
-
-    orderedArray.splice(j, 0, inits[i]);
+  if (!ordered)
+  {
+    orderInits();
+    ordered = true;
   }
-
-  callback(orderedArray);
+  callback(orderedInits);
 
 }
 
+exports.clearInit = forgetInit;
+exports.overwrite = overwrite;
+exports.insert = insert;
+exports.rollOne = rollOneUser;
 exports.recall = recallRolls;
-exports.reroll = rollAll;
+exports.rollAll = rollAll;

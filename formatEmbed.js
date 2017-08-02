@@ -43,7 +43,7 @@ var inits = function(inits, callback){
   var str = "";
   for (var i = 0; i < inits.length; i++)
   {
-    str += inits[i].name + " rolled " + inits[i].roll + " " + (inits[i].bonus||"+0") + " **Total** : " +inits[i].init;
+    str += inits[i].name + " rolled " + inits[i].roll + " " + inits[i].bonus + " **Total** : " + inits[i].init;
     str += "\n\n"
   }
   var embed = {title: "Initiatives", description : str, color:randomColor() };
@@ -52,6 +52,8 @@ var inits = function(inits, callback){
 
 var initsSparse = function(inits, callback){
 
+  console.log("Publishing the sparse init list");
+  console.log(inits);
   var names = [];
   for (var i = 0; i < inits.length; i++)
   {
@@ -72,9 +74,8 @@ var initsSparse = function(inits, callback){
   console.log(names);
   for (var i = 0; i < inits.length; i++)
   {
-    console.log(names[i]);
-    str += names[i] + " : " +inits[i].init +"\n";
-
+    str += names[i] + " : " + inits[i].init +"\n";
+    console.log(str);
   }
   str += "```"
   var embed = {title: "Initiatives", description : str, color:randomColor() };
@@ -117,23 +118,77 @@ function randomColor(){
 
 var showHelp = function(callback){
   var msg = "I respond to the following commands: \n"
-   + "```?Help                    -> Gets you back to this list.\n"
+  /* + "```?Help                    -> Gets you back to this list.\n"
    //+ "?Who am I                -> Lists the character I currently have linked for you.\n"
    + "?Who is [name]           -> Lists the character I currently have linked for player [name].\n"
    + "?Who is --everyone       -> Lists the characters I currently have linked for everyone on the server.\n"
    + "?Who is --me             -> Lists the character I currently have linked for you.\n"
+   //+ "?Who plays [name]        -> Tells you which user controls a specified character name\n"
    + "?I Am  [args]            -> Lets you update your details with me. \n"
    + " # where [args] is 1 or more of the following of\n"
    + "   ## --name [name]        \n"
-   + "   ## --link [link]        \n```"
-   //+ "   ## --init [init]        \n"
+   + "   ## --link [link]        \n"
+   + "   ## --init [init]        \n```"
+   +"\n The initiative tracking module has its own set of commands\n\n"
+   + "```"
+   +"?Rolls [--verbose]              -> Lists the current initative values. Use the --verbose flag to see exactly what was rolled\n"
+   +"?Rolls --add --name [name] --i N-> Adds an enitity to the init tracking for this combat\n"
+   +"?Rolls --forget [name]          -> removes the specified entity from the init tracking for this combat\n"
+   +"?Rolls --forget --me            -> removes *you* from the init tracking for this combat\n"
+   +"?Rolls --forget --everyone      -> Drops all initiative tracking for this combat"
+   +"?Reroll                         -> rolls initiative for everyone being tracked\n"
+   +"?Reroll --me                    -> rolls initiative for you.\n"
+   +"?Reroll --n [name]              -> Rolls initiative for the named player/character.\n"
+   +"?Reroll --d                     -> Loads character information from the database to reroll. CAUTION: This removes anyone added via ?Rolls --add\n```"
    //+ "?Init order              -> returns the current initiative list for the party.\n"
    //+ "?Roll init               -> rolls a new initiative list for the party. Please check your stored bonus!\n\n```"
    + "\nI also understand a few abbreviations\n\n"
-   + "```?I --n [n] --l [l] == ?I Am --name [name] --link [link]\n"
+   + "```"
+   + "?I --n [n] --l [l] == ?I Am --name [name] --link [link]\n"
    + "?w [name]          == ?Who is [name]\n"
    + "?w --m             == ?Who is --me\n"
-   + "?w --e             == ?Who is --everyone```"
+   + "?w --e             == ?Who is --everyone\n"
+   + "?r [--v]           == ?Rolls [--verbose]\n"
+   + "?r --a [n] [ib]    == ?Rolls --add [name] [initbonus]\n"
+   + "?r --f [n]/--{m/e} == ?Rolls --forget\n"
+   + "?rr --m/--d        == ?Reroll\n```"
+   //+ "?r        == ?Roll init\n"
+   //+ "?o        == ?init order\n```"
+   */
+   msg += "```?Help\n"
+   + "?Who is [name]\n"
+   + "?Who is --everyone\n"
+   + "?Who is --me\n"
+   + "?I Am  [args]\n"
+   + " # where [args] is 1 or more of the following of\n"
+   + "   ## --name [name]        \n"
+   + "   ## --link [link]        \n"
+   + "   ## --init [init]        \n```"
+   +"\n The initiative tracking module has its own set of commands\n\n"
+   + "```"
+   +"?Rolls {--verbose}\n"
+   //+"?Rolls --overwrite --name [name] --init [init]\n"
+   +"?Rolls --add --name [name] --init [initBonus]\n"
+   //+"?Rolls --forget [name]\n"
+  // +"?Rolls --forget --me\n"
+   //+"?Rolls --forget --everyone\n"
+   +"?Rolls --forget\n"
+   +"?Reroll\n"
+   +"?Reroll --me\n"
+   +"?Reroll --name [name]\n"
+   +"?Reroll --deep CAUTION: Drops all --add additions\n```"
+   + "\nI also understand a few abbreviations\n\n"
+   + "```"
+   + "?I --n [n] --l [l]\n"
+   + "?w [name]\n"
+   + "?w --m\n"
+   + "?w --e\n"
+   + "?r [--v]\n"
+   //+ "?r --o --n [n] --i [i]\n"
+   + "?r --a [n] --i [i]\n"
+   //+ "?r --f [n]/--{m/e}\n"
+   + "?r --f\n"
+   + "?rr --m/--d\n```"
    //+ "?r        == ?Roll init\n"
    //+ "?o        == ?init order\n```"
    embed = {title: "Help", description : msg, color:randomColor()};

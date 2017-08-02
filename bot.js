@@ -30,16 +30,32 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
         // passes the message to the parsing module
         parseArgs.parse(message.substring(1), function (cmd, values){
-          switch (cmd)
+          switch (cmd.id)
           {
             /* Event Guide:
                 value | Meaning
                   0   | Default, display a specific error message
                   1   | show the help menu
-                  2   | show the details of everyone
-                  3   | show the details of calling users
-                  4   | show the details of a named user
-                  5   | update the details of the calling user
+                  2   | query
+                        Scope :
+                        0   | show the details of everyone
+                        1   | show the details of calling users
+                        2   | show the details of a named user
+                  3   | update the details of the calling user
+                  4   | Recall Initiatives
+                  5   | Over-write Initiatives
+                  6   | add user to initiatives
+                  7   | Delete Initiatives
+                        Scope :
+                        0   | All users
+                        1   | self
+                        2   | specified user
+                  8   | Reroll Initiatives
+                        Scope:
+                        0   | everyone
+                        1   | self
+                        2   | specified user
+                        X3   | deep RerollX Now handled with a flag in content on case 0
             */
             case 0:
               bot.sendMessage({to:channelID, message: values});
@@ -50,34 +66,103 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               });
             break;
             case 2:
-              handleQuery(" ", channelID, lookup.everyone, embed.allUsers);
+              switch(cmd.scope){
+                case 0:
+                  handleQuery(" ", channelID, lookup.everyone, embed.allUsers);
+                  break;
+                case 1:
+                  handleQuery(user, channelID, lookup.self, embed.self);
+                  break;
+                case 2:
+                  handleQuery(user, channelID, lookup.self, embed.self);
+                  break;
+              }
             break;
             case 3:
-              handleQuery(user, channelID, lookup.self, embed.self);
-            break;
-            case 4:
-              handleQuery(values, channelID, lookup.other, embed.other);
-            break;
-            case 5:
               handleUpdate(user, values, channelID);
             break;
-            case 6:
-              //content will be "true" for sparse, or "false" for verbose
+            case 4:
               recallInitiative(channelID, values);
+            break;
+            case 5:
+              initManager.overwrite(values.name, values.init, function(ret)
+            {
+              switch(ret){
+                case(0):
+                  bot.sendMessage({ to:channelID, message: "Initaitve value for " + values.name + " overwritten!"}, function(){
+                    recallInitiative(channelID, false);
+                  });
+                break;
+                case(1):
+                  bot.sendMessage({ to:channelID, message: "ERROR: Failed to over-write, no active initiatives."});
+                break;
+                case(2):
+                  bot.sendMessage({ to:channelID, message: "ERROR: User " + values.name + " not found!"});
+                break;
+              }
+            })
+              // Over write initiative for specified user with specified value
+            break;
+            case 6:
+              initManager.insert(values.name, values.bonus, function(ret){
+                switch(ret){
+                  case(-1):
+                    bot.sendMessage({ to:channelID, message: "Cannot Add " + values.name + " They already exist!"});
+                  break;
+                  case(0):
+                    bot.sendMessage({ to:channelID, message: values.name + " Added to initaitve!"});
+                    recallInitiative(channelID, false);
+                  break;
+                }
+              })
+              //Add user to initiative
             break;
             case 7:
               //values will be true for a deep recall IE reload from DB, or false for a light one
-              console.log("case 7 values");
-              console.log(values);
-              rerollInitiative(channelID, values);
+              switch (cmd.scope){
+                case 0:
+                //deletes entire initiative
+                initManager.clearInit();
+                bot.sendMessage({ to:channelID, message: "Inits Cleared!"});
+                break;
+                case 1:
+                //deletes calling user initiative
+                break;
+                case 2:
+                //deletes specified initiative
+                break
+              }
             break;
+            case 8:
+              //reroll initiative
+              console.log("Dealing with initiative");
+              switch (cmd.scope){
+                case 0:
+                console.log("Rolling for everyone");
+                manageRolls(initManager.rollAll, values, channelID);
+                break;
+                case 1:
+                manageRolls(initManager.rollOne, user, channelID);
+                break;
+                case 2:
+                manageRolls(initManager.rollOne, values, channelID);
+                break;
+              }
           }
         });
      }
 });
 
+function manageRolls(rollType, input, channelID)
+{
+  rollType(input, function(){
+    recallInitiative(channelID, true);
+  });
+}
+
 function recallInitiative(channelID, verbose){
   initManager.recall(function(inits){
+    console.log("From bot.js init printing function")
     console.log(inits);
     if(inits == null)
     {
