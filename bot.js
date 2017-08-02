@@ -104,7 +104,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               // Over write initiative for specified user with specified value
             break;
             case 6:
-              initManager.insert(values.name, values.bonus, function(ret){
+              initManager.insert(values.name, values.init, function(ret){
                 switch(ret){
                   case(-1):
                     bot.sendMessage({ to:channelID, message: "Cannot Add " + values.name + " They already exist!"});

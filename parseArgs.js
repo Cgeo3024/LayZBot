@@ -123,6 +123,7 @@ var initialParse = function(raw, callback)
                 break;
               }
             }
+            console.log("Returning name " + name);
             content = {name:name, init:init};
           break;
           case "forget":
