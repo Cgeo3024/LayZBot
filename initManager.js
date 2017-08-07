@@ -188,30 +188,36 @@ var insert = function(name, bonus, callback)
   var roll = random20();
   var nuBonus = parseInt(bonus) ? bonus : "+0";
   var total = parseInt(nuBonus) + roll;
-  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ", })
+  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ" })
 
   if (ordered)
   {
-    var j = 0;
-    for(; j < orderedInits.length; j++)
-    {
-      if (orderedInits[j].init == null){
-        break;
-      }
-      if (total > parseInt(orderedInits[j].init)){
-        break;
-      }
-      // randomly positions this element relative to the one with identical initiative
-      if (total == parseInt(orderedInits[j].init)){
-        j += Math.floor(Math.random() * 2);
-        break;
-      }
-    }
-
-    orderedInits.splice(j, 0, {name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ", });
+    insertIntoPreOrdered({name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ"})
   }
   callback(0);
 }
+
+var insertIntoPreOrdered = function(entity)
+{
+  var j = 0;
+  for(; j < orderedInits.length; j++)
+  {
+    if (orderedInits[j].init == null){
+      break;
+    }
+    if (entity.init > parseInt(orderedInits[j].init)){
+      break;
+    }
+    // randomly positions this element relative to the one with identical initiative
+    if (entity.init == parseInt(orderedInits[j].init)){
+      j += Math.floor(Math.random() * 2);
+      break;
+    }
+  }
+
+  orderedInits.splice(j, 0, entity);
+}
+
 
 /*
 * Replaces existing roll in ordered inits with argVals
@@ -226,6 +232,7 @@ var overwrite = function(name, roll, callback){
     callback(1);
     return;
   }
+  var entity;
   var overwrote = false;
   var j = 0;
   for(; j < orderedInits.length; j++)
@@ -234,8 +241,14 @@ var overwrite = function(name, roll, callback){
       orderedInits[j].roll = roll;
       orderedInits[j].init = (parseInt(roll) || 0) + parseInt(orderedInits[j].bonus);
       overwrote = true;
+      entity = orderedInits.splice(j,1)[0];
     }
 
+  }
+
+  if (overwrote)
+  {
+    insertIntoPreOrdered(entity);
   }
 
   callback(overwrote ? 0 : 2);

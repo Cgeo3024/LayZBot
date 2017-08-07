@@ -67,6 +67,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               });
             break;
             case 2:
+              console.log("Handling QUery");
+              console.log(values);
               switch(cmd.scope){
                 case 0:
                   handleQuery(" ", channelID, lookup.everyone, embed.allUsers);
@@ -75,7 +77,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   handleQuery(user, channelID, lookup.self, embed.self);
                   break;
                 case 2:
-                  handleQuery(user, channelID, lookup.self, embed.self);
+                  handleQuery(values, channelID, lookup.self, embed.other);
                   break;
               }
             break;
@@ -91,7 +93,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               switch(ret){
                 case(0):
                   bot.sendMessage({ to:channelID, message: "Initaitve value for " + values.name + " overwritten!"}, function(){
+                    console.log("Recalling Initiatives");
                     recallInitiative(channelID, false);
+
                   });
                 break;
                 case(1):
@@ -192,14 +196,8 @@ function rerollInitiative(channelID, deep){
 
 function handleUpdate(user, content, channelID){
   lookup.update(content, user, function(updated){
-    //console.log("updating user info");
     var embed;
-    if (updated) {
-      embed = {description: "Your details have been successfully updated!", color: 3066993}
-    }
-    else {
-      embed = {description: "Your details have been successfully registered!", color: 3066993}
-    }
+    embed = {description: "Your details have been successfully " + updated ? "updated!" : "registered!", color: 3066993}
     sendEmbed(embed, channelID);
   });
 }

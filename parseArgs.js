@@ -76,55 +76,29 @@ var initialParse = function(raw, callback)
             // SET CONTENT TO USER NAME AND init\
             // REGENERAtE names
             // MANAGE OVERWRITING
-            var name;
-            var init;
             if (argVals.length < 4)
             {
               callback({id:0, scope: 0}, "ERROR: NOT ENOUGH ARGS IN OVERWRITE");
               return false;
             }
-            for (var l = 1; l < argVals.length; l++)
-            {
-              switch (argVals[l][0].toLowerCase())
-              {
-                case("name"):
-                case("n"):
-                  name = repairName(argVals[l], 1);
-                break;
-                case("init"):
-                case("i"):
-                  init = argVals[l][1];
-                break;
-              }
-            }
-            content = {name:name, init:init};
+
+            var res = parseGeneric(argVals.slice(1));
+
+            content = {name:res.name, init:res.init};
           break;
           case "add":
           case "a":
             eventID = 6;
-            var name;
-            var init;
             if (argVals.length < 4)
             {
               callback({id:0, scope: 0}, "ERROR: NOT ENOUGH ARGS IN OVERWRITE");
               return false;
             }
-            for (var l = 1; l < argVals.length; l++)
-            {
-              switch (argVals[l][0].toLowerCase())
-              {
-                case("name"):
-                case("n"):
-                  name = repairName(argVals[l], 1);
-                break;
-                case("init"):
-                case("i"):
-                  init = argVals[l][1];
-                break;
-              }
-            }
-            console.log("Returning name " + name);
-            content = {name:name, init:init};
+
+            var res = parseGeneric(argVals.slice(1));
+
+            content = {name:res.name, init:res.init};
+            console.log("Returning name " + res.name);
           break;
           case "forget":
           case "f":
@@ -174,45 +148,10 @@ var initialParse = function(raw, callback)
       } else {
         var update = {};
         var correct = 0;
-        for (var i = 1; i < argVals.length; i++)
-        {
-          console.log(argVals);
-          if (argVals[i].length < 2)
-          {
-            eventID = 0;
-            content = "Oops, did you forget to add a value for your flag?\n";
-          } else {
-            console.log("Switching on: " + argVals[i][0]);
-            switch (argVals[i][0].toLowerCase()){
-              case "n":
-              case "name":
-                console.log("Switching");
-                var name = repairName(argVals[i], 1);
-                update.name = name;
-                correct ++;
-              break;
-              case "l":
-              case "link":
-                update.link = argVals[i][1];
-                correct ++;
-              break;
-              case "i":
-              case "init":
-                update.init = argVals[i][1];
-                correct ++;
-              break;
-            }
-          }
-        }
 
-        if (correct > 0) {
-          eventID = 3;
-          content = update;
-
-        } else {
-          eventID = 0;
-          content = "Could not proceed with recording your information. No values were correctly flagged"
-        }
+        var res = parseGeneric(argVals.slice(1));
+        eventID = 3;
+        content = res
       }
     break;
     default:
@@ -220,6 +159,33 @@ var initialParse = function(raw, callback)
   }
 
   callback({id:eventID, scope: scope}, content)
+}
+
+function parseGeneric(raw)
+{
+  var res = {};
+  for (var l = 0; l < raw.length; l++)
+  {
+    switch (raw[l][0].toLowerCase())
+    {
+      case("name"):
+      case("n"):
+        res.name = repairName(raw[l], 1);
+      break;
+      case("init"):
+      case("i"):
+        res.init = raw[l][1];
+      break;
+      case("link"):
+      case("l"):
+        res.link = raw[l][1];
+      break;
+    }
+  }
+  console.log(res);
+  console.log("Generic Parse Resulted like thus");
+  return res;
+
 }
 
 function repairName(arr, index)
@@ -285,7 +251,6 @@ function parseWho(verb, offset, argVals)
           generic = false;
         }
       } else {
-        //console.log("Looking at generics");
         generic = true;
       }
     }
@@ -295,7 +260,8 @@ function parseWho(verb, offset, argVals)
           eventID = 0;
           content = "Avrae is my much more advanced co-worker. Toss them a !Help to learn more.";
         } else {
-          scope = 3;
+          eventID = 2;
+          scope = 2;
           content = name
         }
       }

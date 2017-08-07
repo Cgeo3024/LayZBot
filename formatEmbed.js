@@ -12,29 +12,25 @@ var allUsers = function(users, callback){
 
 // formats the result messagge for looking up another user
 var other = function(user, callback){
-  var embed
-  if (user.length < 1)
-  {
-    embed = {description : "Sorry, that user is not registered with me!", color:15158332}
-  } else {
-    var msg = user[0].user + " is [" + user[0].name + "](" + user[0].link +")";
-    embed = { description : msg, color:randomColor()};
-  }
-  callback(embed);
+  var embed = {msg : user[0].user + " is ["};
+  callback(formatSingleUserEmbed(embed));
 };
 
-var self = function(user, callback){
-  var embed;
-  if (user.length < 1)
+var formatSingleUserEmbed = function(embed, user)
+{
+  if(user.length < 1)
   {
-    embed = {description : "Sorry, I couldn't find you in my records!", color:15158332}
-  } else {
-    var msg = "You are [" + user[0].name + "](" + user[0].link +")";
-    //console.log(msg);
-    embed = {title: user[0].user, description : msg, color:randomColor()};
+    return ({description : "Sorry, that user is not registered with me!", color:15158332});
   }
+  embed.msg += user[0].name +"](" + user[0].link + " ";
+  embed.color = randomColor();
+  return embed;
+}
 
-  callback(embed);
+var self = function(user, callback){
+  var embed = {title:user[0].user, msg: "You are ["};
+
+  callback(formatSingleUserEmbed(embed));
 };
 
 var inits = function(inits, callback){
@@ -43,7 +39,7 @@ var inits = function(inits, callback){
   var str = "";
   for (var i = 0; i < inits.length; i++)
   {
-    str += inits[i].name + " rolled " + inits[i].roll + " " + inits[i].bonus + " **Total** : " + inits[i].init;
+    str += inits[i].name + " rolled " + inits[i].roll + " " + inits[i].bonus + " **Total**: " + inits[i].init;
     str += "\n\n"
   }
   var embed = {title: "Initiatives", description : str, color:randomColor() };
@@ -59,26 +55,22 @@ var initsSparse = function(inits, callback){
   {
     names.push(inits[i].name);
   }
-
+  console.log(names);
   var L = longestName(names);
   var str = "```";
 
-  console.log(names);
-  for (var i = 0; i < names.length; i++)
+  for (var i = 0; i < inits.length; i++)
   {
     while(names[i].length < L)
     {
       names[i] += " ";
     }
-  }
-  console.log(names);
-  for (var i = 0; i < inits.length; i++)
-  {
     str += names[i] + " : " + inits[i].init +"\n";
     console.log(str);
   }
   str += "```"
   var embed = {title: "Initiatives", description : str, color:randomColor() };
+  console.log("returning sparse embed");
   callback(embed);
 }
 
