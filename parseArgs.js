@@ -225,7 +225,7 @@ function parseWho(verb, offset, argVals)
       break;
       case "m":
       case "me":
-        scope = 2
+        scope = 1
       break;
     }
   } else if (argVals[0].length > offset){

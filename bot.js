@@ -5,6 +5,7 @@ var config      = require('./config.js');
 var embed       = require('./formatEmbed.js');
 var parseArgs   = require('./parseArgs.js')
 var initManager = require('./initManager.js');
+var config = require('./config.js');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -18,6 +19,7 @@ var bot = new Discord.Client({
    autorun: true
 });
 bot.on('ready', function (evt) {
+    //lookup.initDBConn(config.dburi)
     bot.setPresence({game :{name:"Dumb || Try ?Help"}});
     logger.info('Connected');
     logger.info('Logged in as: ');

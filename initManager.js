@@ -37,22 +37,8 @@ function random20(){
   return (Math.floor(Math.random() * 20) + 1);
 }
 
-//var forgetOneUser = function
-
 
 var rollOneChar = function(name, callback){
-  // look for the user
-  /*for (i in inits){
-    if (inits[i].name.toLowerCase() == name.toLowerCase())
-    {
-
-      // after we find the user we perform their roll
-      var roll = random20();
-      inits[i].init = roll + parseInt(inits[i].bonus);
-      inits[i].roll = roll;
-      callback({roll: roll, bonus: inits[i].bonus})
-    }
-  }*/
 
   var i = inits.findIndex(init => init.name.toLowerCase() == name.toLowerCase());
   console.log(i + " Is the location of " + name + " in :\n");
@@ -84,18 +70,6 @@ var rollOneUser = function(user, callback){
     return 0;
   }
 
-  /*for (i in inits){
-    if (inits[i].user.toLowerCase() == user.toLowerCase())
-    {
-
-      // after we find the user we perform their roll
-      var roll = random20();
-      inits[i].init = roll + parseInt(inits[i].bonus);
-      inits[i].roll = roll;
-      callback({roll: roll, bonus: inits[i].bonus})
-    }
-  }*/
-  // if we can't find this user check character names
   rollOneChar(user, callback);
 
 }
@@ -124,20 +98,6 @@ var rollAll = function(deep, callback){
       callback(true);
 
     });
-  /*} else {
-    for (var i = 0; i < entities.length; i++)
-    {
-      var e = {user:entities[i].user, name:entities[i].name};
-      var roll = random20();
-
-      e.roll = roll;
-      e.bonus = entities[i].bonus;
-      inits.push(e);
-    }
-    console.log("Finished rolling inits from the rollAll function");
-    console.log(inits);
-    callback(true);
-  } */
 }
 
 var orderInits = function(){
