@@ -137,18 +137,6 @@ var showHelp = function(callback){
    +"?Reroll --d                     -> Loads character information from the database to reroll. CAUTION: This removes anyone added via ?Rolls --add\n```"
    //+ "?Init order              -> returns the current initiative list for the party.\n"
    //+ "?Roll init               -> rolls a new initiative list for the party. Please check your stored bonus!\n\n```"
-   + "\nI also understand a few abbreviations\n\n"
-   + "```"
-   + "?I --n [n] --l [l] == ?I Am --name [name] --link [link]\n"
-   + "?w [name]          == ?Who is [name]\n"
-   + "?w --m             == ?Who is --me\n"
-   + "?w --e             == ?Who is --everyone\n"
-   + "?r [--v]           == ?Rolls [--verbose]\n"
-   + "?r --a [n] [ib]    == ?Rolls --add [name] [initbonus]\n"
-   + "?r --f [n]/--{m/e} == ?Rolls --forget\n"
-   + "?rr --m/--d        == ?Reroll\n```"
-   //+ "?r        == ?Roll init\n"
-   //+ "?o        == ?init order\n```"
    */
    msg += "```?Help\n"
    + "?Who is [name]\n"
@@ -179,13 +167,9 @@ var showHelp = function(callback){
    + "?w --m\n"
    + "?w --e\n"
    + "?r [--v]\n"
-   //+ "?r --o --n [n] --i [i]\n"
    + "?r --a [n] --i [i]\n"
-   //+ "?r --f [n]/--{m/e}\n"
    + "?r --f\n"
    + "?rr --m/--d\n```"
-   //+ "?r        == ?Roll init\n"
-   //+ "?o        == ?init order\n```"
    embed = {title: "Help", description : msg, color:randomColor()};
    callback(embed);
 }

@@ -1,3 +1,5 @@
+
+
 var initialParse = function(raw, callback)
 {
   var eventID = 0;
@@ -22,6 +24,7 @@ var initialParse = function(raw, callback)
   for (var i = 0; i < args.length; i++){
     argVals[i] = args[i].replace(/\s+$/, '').split(' ');
   }
+  /*
   console.log("PARSING ARGUMENTS");
   console.log("||||||||||||||||||||||||||");
   console.log("||||||||||||||||||||||||||");
@@ -33,12 +36,13 @@ var initialParse = function(raw, callback)
   console.log("||||||||||||||||||||||||||");
   console.log("||||||||||||||||||||||||||");
   console.log("||||||||||||||||||||||||||");
+  */
   // takes the first input as the command to execute
   var cmd = argVals[0][0].toLowerCase();
   var msg = "Sorry, I'm not sure what you want.";
   var scope = null;
   switch(cmd) {
-
+    var flags = parseGeneric(argVals.slice(1));
     // the hello message falls through to the help message
     case 'hello':
       content = "Hello! I am a simple helper bot for this DnD Group.\n\n";
@@ -78,7 +82,7 @@ var initialParse = function(raw, callback)
             // MANAGE OVERWRITING
             if (argVals.length < 4)
             {
-              callback({id:0, scope: 0}, "ERROR: NOT ENOUGH ARGS IN OVERWRITE");
+              callback("ERROR: NOT ENOUGH ARGS IN OVERWRITE", 0,0);
               return false;
             }
 
@@ -91,7 +95,7 @@ var initialParse = function(raw, callback)
             eventID = 6;
             if (argVals.length < 4)
             {
-              callback({id:0, scope: 0}, "ERROR: NOT ENOUGH ARGS IN OVERWRITE");
+              callback("ERROR: NOT ENOUGH ARGS IN OVERWRITE",0,0);
               return false;
             }
 
@@ -158,9 +162,10 @@ var initialParse = function(raw, callback)
     break;
   }
 
-  callback({id:eventID, scope: scope}, content)
+  callback(content, eventID, scope)
 }
 
+// strips out all flags and their values from the input
 function parseGeneric(raw)
 {
   var res = {};
@@ -179,6 +184,34 @@ function parseGeneric(raw)
       case("link"):
       case("l"):
         res.link = raw[l][1];
+      break;
+      case("me"):
+      case("m"):
+        res.self = true;
+      break;
+      case("everyone"):
+      case("e"):
+          res.everyone = true;
+      break;
+      case("forget"):
+      case("f"):
+        res.forget = true;
+      break;
+      case("add"):
+      case("a")  :
+        res.add = true;
+      break;
+      case("overwrite"):
+      case("o"):
+        res.overwrite = true;
+      break;
+      case("deep"):
+      case("d"):
+        res.deep = true;
+      break;
+      case("verbose"):
+      case("v"):
+        res.verbose = true;
       break;
     }
   }
@@ -221,10 +254,12 @@ function parseWho(verb, offset, argVals)
     {
       case "e":
       case "everyone":
+      eventID = 2;
         scope = 0;
       break;
       case "m":
       case "me":
+        eventID = 2;
         scope = 1
       break;
     }

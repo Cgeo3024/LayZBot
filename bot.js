@@ -1,11 +1,10 @@
 var Discord     = require('discord.io');
 var logger      = require('winston');
-var lookup      = require('./lookups.js');
-var config      = require('./config.js');
-var embed       = require('./formatEmbed.js');
-var parseArgs   = require('./parseArgs.js')
-var initManager = require('./initManager.js');
-var config = require('./config.js');
+var lookup      = require('./modules/data/lookups.js');
+var embed       = require('./modules/messaging/formatEmbed.js');
+var parseArgs   = require('./modules/messaging/parseArgs.js')
+var initManager = require('./modules/data/initManager.js');
+var config      = require('./resources/config.js');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -32,11 +31,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     if (message.substring(0, 1) == '?') {
 
         // passes the message to the parsing module
-        parseArgs.parse(message.substring(1), function (cmd, values){
-          switch (cmd.id)
+        parseArgs.parse(message.substring(1), function (data, eventID, scope){
+          logger.debug("recieved in bot.js");
+          logger.debug(data);
+          logger.debug(eventID);
+          logger.debug(scope);
+          switch (eventID)
           {
             /* Event Guide:
                 value | Meaning
+                  -1  | Silent Error : For bot issues, not user error
                   0   | Default, display a specific error message
                   1   | show the help menu
                   2   | query
@@ -61,7 +65,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         X3   | deep RerollX Now handled with a flag in content on case 0
             */
             case 0:
-              bot.sendMessage({to:channelID, message: values});
+              bot.sendMessage({to:channelID, message: data});
             break;
             case 1:
               embed.help(function(embed){
@@ -69,33 +73,25 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               });
             break;
             case 2:
-              console.log("Handling QUery");
-              console.log(values);
-              switch(cmd.scope){
-                case 0:
-                  handleQuery(" ", channelID, lookup.everyone, embed.allUsers);
-                  break;
-                case 1:
-                  handleQuery(user, channelID, lookup.self, embed.self);
-                  break;
-                case 2:
-                  handleQuery(values, channelID, lookup.self, embed.other);
-                  break;
-              }
+              logger.debug("Handling Query");
+              var queryChoices = [lookup.everyone, lookup.self, lookup.self];
+              var userChoices = ["",user,data];
+              var embedChoices = [embed.allUsers, embed.self, embed.other];
+              handleQuery(userChoices[scope], channelID, queryChoices[scope], embedChoices[scope]);
             break;
             case 3:
-              handleUpdate(user, values, channelID);
+              handleUpdate(user, data, channelID);
             break;
             case 4:
-              recallInitiative(channelID, values);
+              recallInitiative(channelID, data);
             break;
             case 5:
-              initManager.overwrite(values.name, values.init, function(ret)
+              initManager.overwrite(data.name, data.init, function(ret)
             {
               switch(ret){
                 case(0):
-                  bot.sendMessage({ to:channelID, message: "Initaitve value for " + values.name + " overwritten!"}, function(){
-                    console.log("Recalling Initiatives");
+                  bot.sendMessage({ to:channelID, message: "Initaitve value for " + data.name + " overwritten!"}, function(){
+                    logger.info("Recalling Initiatives");
                     recallInitiative(channelID, false);
 
                   });
@@ -104,20 +100,20 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   bot.sendMessage({ to:channelID, message: "ERROR: Failed to over-write, no active initiatives."});
                 break;
                 case(2):
-                  bot.sendMessage({ to:channelID, message: "ERROR: User " + values.name + " not found!"});
+                  bot.sendMessage({ to:channelID, message: "ERROR: User " + data.name + " not found!"});
                 break;
               }
             })
               // Over write initiative for specified user with specified value
             break;
             case 6:
-              initManager.insert(values.name, values.init, function(ret){
+              initManager.insert(data.name, data.init, function(ret){
                 switch(ret){
                   case(-1):
-                    bot.sendMessage({ to:channelID, message: "Cannot Add " + values.name + " They already exist!"});
+                    bot.sendMessage({ to:channelID, message: "Cannot Add " + data.name + " They already exist!"});
                   break;
                   case(0):
-                    bot.sendMessage({ to:channelID, message: values.name + " Added to initaitve!"});
+                    bot.sendMessage({ to:channelID, message: data.name + " Added to initaitve!"});
                     recallInitiative(channelID, false);
                   break;
                 }
@@ -126,7 +122,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             break;
             case 7:
               //values will be true for a deep recall IE reload from DB, or false for a light one
-              switch (cmd.scope){
+              switch (scope){
                 case 0:
                 //deletes entire initiative
                 initManager.clearInit();
@@ -142,19 +138,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             break;
             case 8:
               //reroll initiative
-              console.log("Dealing with initiative");
-              switch (cmd.scope){
-                case 0:
-                console.log("Rolling for everyone");
-                manageRolls(initManager.rollAll, values, channelID);
-                break;
-                case 1:
-                manageRolls(initManager.rollOne, user, channelID);
-                break;
-                case 2:
-                manageRolls(initManager.rollOne, values, channelID);
-                break;
-              }
+              logger.info("Dealing with initiative");
+                var rollChoices = [initManager.rollAll, initManager.rollone, initManager.rollone];
+                var userChoice = [data,user,data];
+                manageRolls(rollChoices[scope], userChoice[scope],channelID);
           }
         });
      }
@@ -169,8 +156,7 @@ function manageRolls(rollType, input, channelID)
 
 function recallInitiative(channelID, verbose){
   initManager.recall(function(inits){
-    console.log("From bot.js init printing function")
-    console.log(inits);
+    logger.debug("From bot.js init printing function")
     if(inits == null)
     {
       sendEmbed({title:"error", description:"No inits Set", color: 15158332}, channelID);
@@ -191,7 +177,7 @@ function recallInitiative(channelID, verbose){
 function rerollInitiative(channelID, deep){
   bot.sendMessage({ to:channelID, message: "Rollling for Initative!"});
   initManager.reroll(deep, function(){
-    console.log("Now recalling initiative");
+    logger.info("Now recalling initiative");
     recallInitiative(channelID, true);
   });
 }
@@ -206,7 +192,6 @@ function handleUpdate(user, content, channelID){
 
 function handleQuery(name, channelID, query, embed)
 {
-  console.log(embed);
   bot.sendMessage({ to:channelID, message: "Accessing Database..."});
   query(name, function(msg){
     embed(msg, function(embed){

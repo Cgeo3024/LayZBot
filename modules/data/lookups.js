@@ -1,9 +1,15 @@
-var config = require('./config.js');
+var config = require('../../resources/config.js');
 var http = require("http");
 var mongojs = require("mongojs");
 var db = mongojs(config.dburi, ["users"]);
 var mycollection = db.collection('users');
 
+
+var initializeConnection = function(dbString)
+{
+  db =
+  mycollection
+}
 var lookupEveryone = function(user, callback){
   var msg = [];
   db.users.find(function(err, docs) {
@@ -68,6 +74,7 @@ var performUpdate = function(update, user, callback)
   });
 }
 
+exports.initDBConn  = initializeConnection;
 exports.deleteUser  = deleteUser
 exports.self        = singleLookUp;
 exports.everyone    = lookupEveryone;

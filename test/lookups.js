@@ -1,4 +1,4 @@
-var expect = require("chai").expect;
+/*var expect = require("chai").expect;
 var dbfile = require("../lookups.js");
 console.log(dbfile);
 describe("Database Interface", function(){
@@ -83,5 +83,7 @@ describe("Database Interface", function(){
       });
     });
   }); */
-
+/*
 });
+
+*/
