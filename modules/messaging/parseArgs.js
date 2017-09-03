@@ -39,6 +39,31 @@ var initialParse = function(raw, callback)
     case 'h':
       eventID = 1;
     break;
+    // special adding syntax to reduce amount of flags
+    case "quickadd":
+    case "q":
+    case "qa":
+      console.log("Recieved:");
+      console.log(argVals);
+      eventID = 9
+      if (argVals.length > 1)
+      {
+        msg = "ERROR: quickadd does not accept flags";
+        eventID = 0;
+        break;
+      }
+      if (argVals[0].length < 4)
+      {
+        msg = "ERROR: quickadd requires count, name and initiaitve bonus";
+        eventID = 0;
+        break;
+      }
+      content = {};
+      content.count = parseInt(argVals[0][1]);
+      content.init = parseInt(argVals[0].pop());
+      content.name = repairName(argVals[0],2)
+
+    break;
     // reroll command falls through into the who command, using similar input syntax
     case "rr":
     case "reroll":
@@ -50,7 +75,6 @@ var initialParse = function(raw, callback)
       }
     case 'who':
 
-      if(specialCase)
       switch(args[0].toLowerCase())
       {
         case("who are you"):
@@ -72,9 +96,12 @@ var initialParse = function(raw, callback)
       }
       if(specialCase)
       {
-        break;
+        callback(content, eventID, scope);
+        return;
       }
       flags.name = (repairName(argVals[0],2)) // assumes there is a verb before the name (is, am, are)
+      console.log("new flags");
+      console.log(flags);
     case 'w':
       // our eventID is kept if it is from the reroll command
       eventID = Math.max(eventID, 2);

@@ -14,7 +14,7 @@ logger.add(logger.transports.Console, {
 logger.level = 'debug';
 // Initialize Discord Bot
 var bot = new Discord.Client({
-   token: config.auth,
+   token: process.env.BOT_TOKEN,
    autorun: true
 });
 bot.on('ready', function (evt) {
@@ -63,6 +63,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         1   | self
                         2   | specified user
                         X3   | deep RerollX Now handled with a flag in content on case 0
+                  9   | Add user to initiaitve with Special syntax
             */
             case 0:
               bot.sendMessage({to:channelID, message: data});
@@ -76,6 +77,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               logger.debug("Handling Query");
               var queryChoices = [lookup.everyone, lookup.self, lookup.self];
               var userChoices = ["",user,data];
+              logger.info(data);
               var embedChoices = [embed.allUsers, embed.self, embed.other];
               handleQuery(userChoices[scope], channelID, queryChoices[scope], embedChoices[scope]);
             break;
@@ -142,6 +144,32 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 var rollChoices = [initManager.rollAll, initManager.rollone, initManager.rollone];
                 var userChoice = [data,user,data];
                 manageRolls(rollChoices[scope], userChoice[scope],channelID);
+            break;
+            case 9:
+              var added = 0;
+              for (var i =0; i < data.count; i++)
+              {
+                initManager.insert(data.name+(1+i), data.init, function(ret){
+                  switch(ret){
+                  case(-1):
+                    bot.sendMessage({ to:channelID, message: "Cannot Add " + data.name + " They already exist!"});
+                    added +=1;
+                  break;
+                  case(0):
+                    added +=1;
+                  break;
+                }
+                });
+              }
+
+              while(added < data.count)
+              {
+                sleep(10);
+              }
+
+              bot.sendMessage({ to:channelID, message: data.count + " " + data.name + " Added to initaitve!"});
+              recallInitiative(channelID, false);
+            break;
           }
         });
      }
