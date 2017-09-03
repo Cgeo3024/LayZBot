@@ -132,10 +132,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 break;
                 case 1:
                   //deletes calling user initiative
-                  initManager.forgetOne(user);
+                  initManager.forgetOne(user, function(){
+                    recallInitiative(channelID, false);
+                  });
                 break;
                 case 2:
-                  initManager.forgetOne(data.name);
+                  initManager.forgetOne(data.name,function(){
+                    recallInitiative(channelID, false);
+                  });
                 //deletes specified initiative
                 break
               }

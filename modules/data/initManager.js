@@ -241,6 +241,7 @@ var forgetOne = function(name, callback)
   {
     orderedInits.splice(index[i],1);
   }
+  callback();
 }
 
 //returns the current init values
