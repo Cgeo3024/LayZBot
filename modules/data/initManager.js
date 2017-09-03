@@ -133,7 +133,7 @@ var orderInits = function(){
   return true;
 }
 
-var insert = function(name, bonus, callback)
+var insert = function(name, user, bonus, callback)
 {
   console.log("adding new Entity");
   for (var i = 0; i < inits.length; i++)
@@ -148,11 +148,11 @@ var insert = function(name, bonus, callback)
   var roll = random20();
   var nuBonus = parseInt(bonus) ? bonus : "+0";
   var total = parseInt(nuBonus) + roll;
-  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ" })
+  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:user })
 
   if (ordered)
   {
-    insertIntoPreOrdered({name: name, roll: roll, init:total, bonus:nuBonus, user:"LayZ"})
+    insertIntoPreOrdered({name: name, roll: roll, init:total, bonus:nuBonus, user:user})
   }
   callback(0);
 }
@@ -214,6 +214,35 @@ var overwrite = function(name, roll, callback){
   callback(overwrote ? 0 : 2);
 }
 
+var forgetOne = function(name, callback)
+{
+  console.log("forgetting" + name);
+  var found = false;
+  var index = [];
+  for (var i = 0; i < orderedInits.length; i++)
+  {
+    if (orderedInits[i].name.toLowerCase() == name.toLowerCase())
+    {
+      console.log(orderedInits[i]);
+      found = true;
+      index.push(i);
+    } else {
+      if(orderedInits[i].user.toLowerCase() == name.toLowerCase())
+      {
+        console.log(orderedInits[i]);
+        found = true;
+        index.push(i);
+      }
+    }
+
+  }
+
+  for (var i = index.length -1; i >= 0; i--)
+  {
+    orderedInits.splice(index[i],1);
+  }
+}
+
 //returns the current init values
 var recallRolls = function(callback){
   // we want the rolls to be ordered by initiative for readability
@@ -237,6 +266,7 @@ var recallRolls = function(callback){
 
 }
 
+exports.forgetOne = forgetOne;
 exports.clearInit = forgetInit;
 exports.overwrite = overwrite;
 exports.insert = insert;

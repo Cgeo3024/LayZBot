@@ -35,6 +35,22 @@ var initialParse = function(raw, callback)
     case 'hello':
       content = "Hello! I am a simple helper bot for this DnD Group.\n\n";
     break;
+    case 'forget':
+    case 'f':
+      console.log(argVals);
+      console.log(flags);
+      if (flags.self)
+      {
+        scope = 1;
+        eventID = 7;
+      }
+      else {
+        content = {};
+        content.name = repairName(argVals[0],1);
+        scope = 2;
+        eventID = 7;
+      }
+    break;
     case 'help':
     case 'h':
       eventID = 1;

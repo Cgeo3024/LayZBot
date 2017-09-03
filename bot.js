@@ -109,7 +109,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               // Over write initiative for specified user with specified value
             break;
             case 6:
-              initManager.insert(data.name, data.init, function(ret){
+              initManager.insert(data.name, data.name, data.init, function(ret){
                 switch(ret){
                   case(-1):
                     bot.sendMessage({ to:channelID, message: "Cannot Add " + data.name + " They already exist!"});
@@ -131,9 +131,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 bot.sendMessage({ to:channelID, message: "Inits Cleared!"});
                 break;
                 case 1:
-                //deletes calling user initiative
+                  //deletes calling user initiative
+                  initManager.forgetOne(user);
                 break;
                 case 2:
+                  initManager.forgetOne(data.name);
                 //deletes specified initiative
                 break
               }
@@ -149,7 +151,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               var added = 0;
               for (var i =0; i < data.count; i++)
               {
-                initManager.insert(data.name+(1+i), data.init, function(ret){
+                initManager.insert(data.name+ " " + (1+i), data.name, data.init, function(ret){
                   switch(ret){
                   case(-1):
                     bot.sendMessage({ to:channelID, message: "Cannot Add " + data.name + " They already exist!"});
