@@ -246,10 +246,17 @@ function handleQuery(name, channelID, query, embed)
   console.log(query);
   console.log(embed);
   bot.sendMessage({ to:channelID, message: "Accessing Database..."});
-  query(name, function(msg){
-    embed(msg, function(embed){
-      sendEmbed(embed, channelID);
-    });
+  query(name, function(msg, err){
+    console.log("returns");
+    if (msg.length < 1)
+    {
+      bot.sendMessage({ to:channelID, message: "That user does not exist"});
+    } else {
+      embed(msg, function(embed){
+        sendEmbed(embed, channelID);
+      });
+    }
+
   });
 }
 var sendEmbed = function(embed, channelID){
