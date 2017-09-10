@@ -78,6 +78,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               var queryChoices = [lookup.everyone, lookup.self, lookup.self];
               var userChoices = ["",user,data];
               logger.info(data);
+              logger.info("Quering " + scope);
               var embedChoices = [embed.allUsers, embed.self, embed.other];
               handleQuery(userChoices[scope], channelID, queryChoices[scope], embedChoices[scope]);
             break;
@@ -147,19 +148,29 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 8:
               //reroll initiative
               logger.info("Dealing with initiative");
-                var rollChoices = [initManager.rollAll, initManager.rollone, initManager.rollone];
+              console.log(scope);
+                var rollChoices = [initManager.rollAll, initManager.rollOne, initManager.rollOne];
                 var userChoice = [data,user,data];
+                console.log(rollChoices[2]);
+                console.log(rollChoices);
                 manageRolls(rollChoices[scope], userChoice[scope],channelID);
             break;
             case 9:
               var added = 0;
-              for (var i =0; i < data.count; i++)
+              var limit = data.count;
+              var silenced = false;
+              console.log(added);
+              for (var i =0; i < limit; i++)
               {
+                console.log(i);
                 initManager.insert(data.name+ " " + (1+i), data.name, data.init, function(ret){
                   switch(ret){
                   case(-1):
-                    bot.sendMessage({ to:channelID, message: "Cannot Add " + data.name + " They already exist!"});
-                    added +=1;
+                    if(!silenced){
+                      silenced = true;
+                      bot.sendMessage({ to:channelID, message: data.name + " already exist in order, adjusting index"});
+                    }
+                    limit++;
                   break;
                   case(0):
                     added +=1;
@@ -183,6 +194,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
 function manageRolls(rollType, input, channelID)
 {
+  console.log(rollType);
+  console.log(input);
+  console.log(channelID);
   rollType(input, function(){
     recallInitiative(channelID, true);
   });
@@ -226,6 +240,11 @@ function handleUpdate(user, content, channelID){
 
 function handleQuery(name, channelID, query, embed)
 {
+  console.log("Querying ");
+  console.log(name);
+  console.log(channelID);
+  console.log(query);
+  console.log(embed);
   bot.sendMessage({ to:channelID, message: "Accessing Database..."});
   query(name, function(msg){
     embed(msg, function(embed){

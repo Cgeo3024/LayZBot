@@ -136,6 +136,7 @@ var orderInits = function(){
 var insert = function(name, user, bonus, callback)
 {
   console.log("adding new Entity");
+  console.log(inits);
   for (var i = 0; i < inits.length; i++)
   {
     if (inits[i].name.toLowerCase() == name.toLowerCase())
@@ -214,22 +215,23 @@ var overwrite = function(name, roll, callback){
   callback(overwrote ? 0 : 2);
 }
 
-var forgetOne = function(name, callback)
+
+
+function forgetFromInitEntity(entity, name)
 {
-  console.log("forgetting" + name);
   var found = false;
   var index = [];
-  for (var i = 0; i < orderedInits.length; i++)
+  for (var i = 0; i < entity.length; i++)
   {
-    if (orderedInits[i].name.toLowerCase() == name.toLowerCase())
+    if (entity[i].name.toLowerCase() == name.toLowerCase())
     {
-      console.log(orderedInits[i]);
+      console.log(entity[i]);
       found = true;
       index.push(i);
     } else {
-      if(orderedInits[i].user.toLowerCase() == name.toLowerCase())
+      if(entity[i].user.toLowerCase() == name.toLowerCase())
       {
-        console.log(orderedInits[i]);
+        console.log(entity[i]);
         found = true;
         index.push(i);
       }
@@ -239,9 +241,20 @@ var forgetOne = function(name, callback)
 
   for (var i = index.length -1; i >= 0; i--)
   {
-    orderedInits.splice(index[i],1);
+    entity.splice(index[i],1);
   }
+}
+
+var forgetOne = function(name, callback)
+{
+  forgetFromInitEntity(orderedInits,name);
+  forgetFromInitEntity(inits,name);
+
+
+  console.log(inits);
   callback();
+
+
 }
 
 //returns the current init values

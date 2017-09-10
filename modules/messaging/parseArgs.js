@@ -89,6 +89,7 @@ var initialParse = function(raw, callback)
       if (flags.deep){
         content = true;
       }
+    break;
     case 'who':
 
       switch(args[0].toLowerCase())
@@ -118,8 +119,11 @@ var initialParse = function(raw, callback)
       flags.name = (repairName(argVals[0],2)) // assumes there is a verb before the name (is, am, are)
       console.log("new flags");
       console.log(flags);
+      break;
     case 'w':
       // our eventID is kept if it is from the reroll command
+      console.log("WE ARE PARSING 'W'");
+      console.log(args);
       eventID = Math.max(eventID, 2);
       if (flags.everyone) {
         scope = 0;
@@ -129,6 +133,9 @@ var initialParse = function(raw, callback)
       {
         scope = 2;
         content = flags.name;
+      } else {
+        content = repairName(argVals[0],1);
+        scope = 2;
       }
       break;
     case 'rolls':
