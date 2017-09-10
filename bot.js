@@ -1,5 +1,6 @@
 var Discord     = require('discord.io');
 var logger      = require('winston');
+var generate    = require('./modules/generate/gen');
 var lookup      = require('./modules/data/lookups.js');
 var embed       = require('./modules/messaging/formatEmbed.js');
 var parseArgs   = require('./modules/messaging/parseArgs.js')
@@ -64,6 +65,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         2   | specified user
                         X3   | deep RerollX Now handled with a flag in content on case 0
                   9   | Add user to initiaitve with Special syntax
+                  10  | generates a random character idea (open-source http://whothefuckismydndcharacter.com/)
             */
             case 0:
               bot.sendMessage({to:channelID, message: data});
@@ -186,6 +188,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
               bot.sendMessage({ to:channelID, message: data.count + " " + data.name + " Added to initaitve!"});
               recallInitiative(channelID, false);
+              break;
+            case 10:
+                bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
             break;
           }
         });

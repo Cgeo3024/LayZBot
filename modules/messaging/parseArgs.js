@@ -159,6 +159,10 @@ var initialParse = function(raw, callback)
       eventID = Math.max(eventID,3); // default 0 will be over-written, but not others
       content = flags; // validation to occur on other side
     break;
+    case 'generate':
+    case "g":
+      eventID = 10;
+    break;
     default:
 
     break;
