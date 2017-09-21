@@ -220,13 +220,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     {
                       err += "Value too high! Score " + count + " : " + val
                       + " Should not exceed 15!\n";
-                      continue;
                     }
                     if (val < 8)
                     {
                       err == "Value too low! Score " + count + " : " + val
                       + " Should be at least 8!\n";
-                      valid = false;
                     }
 
                     if ( val > 13 )
@@ -234,8 +232,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                       curr += 2* val%13;
                       val -= val%13;
                     }
+                    if (val < 8)
+                    {
+                      err == "Value too low! Score " + count + " : " + val
+                      + " Should be at least 8!\n";
+                    } else {
+                        curr += val%8;
+                    }
 
-                    curr += val%8;
                   }
 
                   if (count < 6)
