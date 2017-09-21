@@ -166,6 +166,14 @@ var initialParse = function(raw, callback)
     case "pointbuy":
     case "p":
       eventID = 11;
+      if (argVals[0].length < 2)
+      {
+        scope = 0;
+
+      } else {
+        scope = 1;
+        content = argVals[0].slice(1);
+      }
     break;
     default:
 

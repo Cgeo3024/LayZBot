@@ -194,12 +194,85 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
             break;
             case 11:
-              var listtxt = "";
-              for(var i = 0; i < pointbuy.scores.length; i++)
-              {
-                listtxt += pointbuy.scores[i] + "\n";
+              switch(scope){
+                case 0:
+                  var listtxt = "";
+                  for(var i = 0; i < pointbuy.scores.length; i++)
+                  {
+                    listtxt += pointbuy.scores[i] + "\n";
+                  }
+                  bot.sendMessage({ to:channelID, message: listtxt});
+                break;
+                case 1:
+                  var total = 27;
+                  var curr = 0;
+                  var count = 0;
+                  var err ="";
+                  var valid = true;
+                  for (var i = 0; i < data.length; i++)
+                  {
+                    var val = parseInt(data[i]);
+                    console.log("Working with " + val);
+                    console.log("It was " + data[i]);
+                    count += 1;
+
+                    if (val > 15)
+                    {
+                      err += "Value too high! Score " + count + " : " + val
+                      + " Should not exceed 15!\n";
+                      continue;
+                    }
+                    if (val < 8)
+                    {
+                      err == "Value too low! Score " + count + " : " + val
+                      + " Should be at least 8!\n";
+                      valid = false;
+                    }
+
+                    if ( val > 13 )
+                    {
+                      curr += 2* val%13;
+                      val -= val%13;
+                    }
+
+                    curr += val%8;
+                  }
+
+                  if (count < 6)
+                  {
+                    err += "Not enough scores! You've only entered " + count +"/6 required scores\n";
+                  }
+
+                  if (count > 6)
+                  {
+                    err += "Too many scores! You've enetered "  + count +"/6 allowed scores\n";
+                  }
+
+                  if (curr > total)
+                  {
+                    err += "You've assigned too many points! You are allowed " + total +
+                    " and have assigned " + curr +"\n";
+                  }
+
+                  if (curr < total)
+                  {
+                    err += "You've assigned too few points! You are allowed " + total +
+                    " and have assigned " + curr +"\n";
+                  }
+
+                  if(err.length < 1)
+                  {
+                    msg = "Your array " + data + " Is valid!";
+                  }
+                  else {
+                    msg = "Your array " + data + " is *not* valid!\n\n" + err;
+                  }
+                  console.log(err);
+
+                  bot.sendMessage({ to:channelID, message: msg});
+                break;
               }
-              bot.sendMessage({ to:channelID, message: listtxt});
+
             break;
           }
         });
