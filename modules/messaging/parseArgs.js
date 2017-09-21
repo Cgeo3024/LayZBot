@@ -175,6 +175,10 @@ var initialParse = function(raw, callback)
         content = argVals[0].slice(1);
       }
     break;
+    case ".config":
+      eventID = 99;
+      content = argVals[0].slice(1);
+    break;
     default:
 
     break;

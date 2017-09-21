@@ -6,7 +6,7 @@ var embed       = require('./modules/messaging/formatEmbed.js');
 var parseArgs   = require('./modules/messaging/parseArgs.js')
 var initManager = require('./modules/data/initManager.js');
 var config      = require('./resources/config.js');
-var pointbuy = require('./resources/pointbuy.json');
+var pointbuy = require('./modules/pointbuy/pointbuy.js');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -204,79 +204,18 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   bot.sendMessage({ to:channelID, message: listtxt});
                 break;
                 case 1:
-                  var total = 27;
-                  var curr = 0;
-                  var count = 0;
-                  var err ="";
-                  var valid = true;
-                  for (var i = 0; i < data.length; i++)
-                  {
-                    var val = parseInt(data[i]);
-                    console.log("Working with " + val);
-                    console.log("It was " + data[i]);
-                    count += 1;
 
-                    if (val > 15)
-                    {
-                      err += "Value too high! Score " + count + " : " + val
-                      + " Should not exceed 15!\n";
-                    }
-                    if (val < 8)
-                    {
-                      err == "Value too low! Score " + count + " : " + val
-                      + " Should be at least 8!\n";
-                    }
-
-                    if ( val > 13 )
-                    {
-                      curr += 2* val%13;
-                      val -= val%13;
-                    }
-                    if (val < 8)
-                    {
-                      err == "Value too low! Score " + count + " : " + val
-                      + " Should be at least 8!\n";
-                    } else {
-                        curr += val%8;
-                    }
-
-                  }
-
-                  if (count < 6)
-                  {
-                    err += "Not enough scores! You've only entered " + count +"/6 required scores\n";
-                  }
-
-                  if (count > 6)
-                  {
-                    err += "Too many scores! You've enetered "  + count +"/6 allowed scores\n";
-                  }
-
-                  if (curr > total)
-                  {
-                    err += "You've assigned too many points! You are allowed " + total +
-                    " and have assigned " + curr +"\n";
-                  }
-
-                  if (curr < total)
-                  {
-                    err += "You've assigned too few points! You are allowed " + total +
-                    " and have assigned " + curr +"\n";
-                  }
-
-                  if(err.length < 1)
-                  {
-                    msg = "Your array " + data + " Is valid!";
-                  }
-                  else {
-                    msg = "Your array " + data + " is *not* valid!\n\n" + err;
-                  }
-                  console.log(err);
-
+                  var msg = pointbuy.validate(data);
                   bot.sendMessage({ to:channelID, message: msg});
                 break;
               }
 
+            break;
+            case 99:
+              if (data.length >= 4)
+              {
+                pointbuy.config(data[0],data[1],data[2],data[3]);
+              }
             break;
           }
         });
