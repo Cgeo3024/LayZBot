@@ -163,6 +163,10 @@ var initialParse = function(raw, callback)
     case "g":
       eventID = 10;
     break;
+    case "pointbuy":
+    case "p":
+      eventID = 11;
+    break;
     default:
 
     break;

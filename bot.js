@@ -6,6 +6,7 @@ var embed       = require('./modules/messaging/formatEmbed.js');
 var parseArgs   = require('./modules/messaging/parseArgs.js')
 var initManager = require('./modules/data/initManager.js');
 var config      = require('./resources/config.js');
+var pointbuy = require('./resources/pointbuy.json');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -191,6 +192,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               break;
             case 10:
                 bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
+            break;
+            case 11:
+              var listtxt = "";
+              for(var i = 0; i < pointbuy.scores.length; i++)
+              {
+                listtxt += pointbuy.scores[i] + "\n";
+              }
+              bot.sendMessage({ to:channelID, message: listtxt});
             break;
           }
         });
