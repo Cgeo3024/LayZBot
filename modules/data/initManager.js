@@ -6,29 +6,38 @@ var orderedInits = [];
 var set = false;
 var loaded = false;
 var ordered = false;
-// resets the init bonuses
-var forgetInit = function(callback){
+
+// resets the init bonuses, keeps data-base data
+var forgetInit = function(){
   set = false;
-  loaded = false;
   ordered = false;
   orderedInits = [];
   inits = [];
 }
 
+// completely clears initiaitive. Will result in a database call
+var deepForgetInit = function(){
+    forgetInit();
+    loaded = false;
+    entities = [];
+}
+
+// calls the database to laod character information
 var initInit = function(callback){
-  inits = [];
-  entities = [];
+
+  deepForgetInit();
+
   lookup.everyone(null, function(result, err){
     console.log ("Lookup values:");
     console.log(result);
     console.log(err);
     for (var i =0; i < result.length; i++)
     {
-      entities.push({user:result[i][0], name:result[i][1], bonus:result[i][3]});
+      entities.push({user:result[i].user, name:result[i].name, bonus:result[i].init});
     }
     loaded = true;
-    console.log("Finished loading all inits");
-    console.log(inits);
+    console.log("Finished loading all entities");
+    console.log(entities);
     callback(true);
   });
 }
@@ -37,67 +46,44 @@ function random20(){
   return (Math.floor(Math.random() * 20) + 1);
 }
 
-
-var rollOneChar = function(name, callback){
-
-  var i = inits.findIndex(init => init.name.toLowerCase() == name.toLowerCase());
-  console.log(i + " Is the location of " + name + " in :\n");
-  console.log(inits);
-  // if we can't find this user check character names
-  if (i > -1){
-    var roll = random20();
-    inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
-    inits[i].roll = roll;
-    callback({roll: roll, bonus: inits[i].bonus})
+//verifies if the entities need to be reloaded from the database
+// loads them if they are not loaded
+function enforceLoaded(deep, callback)
+{
+  console.log("loaded:" + loaded + ", : deep: " + deep);
+  if(!loaded || deep){
+    console.log("Forced to reload because:")
+    console.log("loaded : " + loaded);
+    console.log("deep :"+ deep);
+    initInit(function(r){
+      callback();
+    });
+  }else {
+      callback();
   }
-  callback(null);
-}
-
-// rolls the init values of the calling player
-var rollOneUser = function(user, callback){
-  // look for the user
-
-  var i = inits.findIndex(init => init.user.toLowerCase() == user.toLowerCase());
-  console.log(i + " Is the location of " + user + " in :\n");
-  console.log(inits);
-  // if we can't find this user check character names
-
-  if (i > -1){
-    var roll = random20();
-    inits[i].init = roll + (parseInt(inits[i].bonus) || 0);
-    inits[i].roll = roll;
-    callback({roll: roll, bonus: inits[i].bonus})
-    return 0;
-  }
-
-  rollOneChar(user, callback);
-
 }
 
 // rolls the init values of all players
 var rollAll = function(deep, callback){
   forgetInit();
-  loaded = true;
-  set = true;
-  //if(!loaded || deep){
-    initInit(function(r){
-      console.log("Rerolled for entitites");
-      console.log(entities);
-      for (var i = 0; i < entities.length; i++)
-      {
-        var e = {user:entities[i].user, name:entities[i].name};
-        var roll = random20();
+  //ensures entities have been loaded from the database before loading them
+  enforceLoaded(deep, function(){
+    for (var i = 0; i < entities.length; i++)
+    {
+      var e = {user:entities[i].user, name:entities[i].name};
+      var roll = random20();
 
-        e.roll = roll;
-        e.bonus = parseInt(entities[i].bonus) ? entities[i].bonus : "+0";
-        e.init = roll + parseInt(e.bonus);
-        inits.push(e);
-      }
-      console.log("Finished rolling inits from the rollAll function -- fresh");
-      console.log(inits);
-      callback(true);
+      e.roll = roll;
+      e.bonus = parseInt(entities[i].bonus) ? entities[i].bonus : "+0";
+      e.init = roll + parseInt(e.bonus);
+      inits.push(e);
+    }
+    loaded = true;
+    set = true;
+    console.log(inits);
+    callback(true);
+  });
 
-    });
 }
 
 var orderInits = function(){
@@ -137,9 +123,9 @@ var insert = function(name, user, bonus, callback)
 {
   console.log("adding new Entity");
   console.log(inits);
-  for (var i = 0; i < inits.length; i++)
+  for (var i = 0; i < entities.length; i++)
   {
-    if (inits[i].name.toLowerCase() == name.toLowerCase())
+    if (entities[i].name.toLowerCase() == name.toLowerCase())
     {
       callback(-1);
       return;
@@ -147,9 +133,10 @@ var insert = function(name, user, bonus, callback)
   }
 
   var roll = random20();
-  var nuBonus = parseInt(bonus) ? bonus : "+0";
+  var nuBonus = parseInt(bonus) ? bonus : "+0"; // undefined, null NAN etc are "falsy" in node.
   var total = parseInt(nuBonus) + roll;
-  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:user })
+  entities.push({user: user, name:name, bonus:nuBonus});
+  inits.push({name: name, roll: roll, init:total, bonus:nuBonus, user:user });
 
   if (ordered)
   {
@@ -245,11 +232,11 @@ function forgetFromInitEntity(entity, name)
   }
 }
 
-var forgetOne = function(name, callback)
+var forgetEntity = function(name, callback)
 {
   forgetFromInitEntity(orderedInits,name);
   forgetFromInitEntity(inits,name);
-
+  forgetFromInitEntity(entities, name);
 
   console.log(inits);
   callback();
@@ -261,6 +248,13 @@ var forgetOne = function(name, callback)
 var recallRolls = function(callback){
   // we want the rolls to be ordered by initiative for readability
   // return an error signifying 'null' when we have no users
+  console.log("Initiative arrays");
+  console.log("Inits");
+  console.log(inits);
+  console.log("Ordered Ints");
+  console.log(orderedInits);
+  console.log("Entities");
+  console.log(entities);
   if (!set) {
     console.log("Returning Null");
     callback(null);
@@ -280,10 +274,9 @@ var recallRolls = function(callback){
 
 }
 
-exports.forgetOne = forgetOne;
+exports.forgetOne = forgetEntity;
 exports.clearInit = forgetInit;
 exports.overwrite = overwrite;
 exports.insert = insert;
-exports.rollOne = rollOneUser;
 exports.recall = recallRolls;
 exports.rollAll = rollAll;

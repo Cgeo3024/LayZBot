@@ -11,11 +11,12 @@ var lookupEveryone = function(user, callback){
   db.users.find(function(err, docs) {
     for (d in docs)
     {
-      msg[d] = [];
-      msg[d][0] = docs[d].user;
-      msg[d][1] = docs[d].name;
-      msg[d][2] = docs[d].link;
-      msg[d][3] = docs[d].init;
+      var temp = {};
+      temp.user = docs[d].user;
+      temp.name = docs[d].characters[docs[d].current].name;
+      temp.link = docs[d].characters[docs[d].current].link;
+      temp.init = docs[d].characters[docs[d].current].init;
+      msg.push(temp);
     }
     callback(msg, err);
 

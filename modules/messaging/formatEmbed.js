@@ -3,7 +3,7 @@ var allUsers = function(users, callback){
   var str = "";
   for (var i = 0; i < users.length; i++)
   {
-    str += "**" +users[i][0] + " is [" + users[i][1] + "](" + users[i][2] + ")**\n";
+    str += "**" +users[i].user + " is [" + users[i].name + "](" + users[i].link + ")**\n";
     str += "\n"
   }
   var embed = {description : str, color:randomColor() };

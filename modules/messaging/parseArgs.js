@@ -84,7 +84,7 @@ var initialParse = function(raw, callback)
     case "rr":
     case "reroll":
       eventID = 8;
-      content = true;
+      content = false;
       scope = 0;
       if (flags.deep){
         content = true;
