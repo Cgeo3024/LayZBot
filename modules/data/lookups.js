@@ -8,14 +8,29 @@ console.log(process.env.DBURI);
 
 var lookupEveryone = function(user, callback){
   var msg = [];
+
   db.users.find(function(err, docs) {
+    console.log(docs);
     for (d in docs)
     {
+      console.log(docs[d]);
       var temp = {};
+      var current = docs[d].current;
+
       temp.user = docs[d].user;
-      temp.name = docs[d].characters[docs[d].current].name;
-      temp.link = docs[d].characters[docs[d].current].link;
-      temp.init = docs[d].characters[docs[d].current].init;
+      for (var i = 0; i < docs[d].characters.length; i++)
+      {
+        console.log("Entering loop");
+        console.log(docs[d].characters[i]);
+        console.log(i);
+        if (docs[d].characters[i].name == current){
+
+          temp.name = docs[d].characters[i].name;
+          temp.link = docs[d].characters[i].link;
+          temp.init = docs[d].characters[i].init;
+        }
+      }
+
       msg.push(temp);
     }
     callback(msg, err);
@@ -36,12 +51,30 @@ var singleLookUp = function (name, callback){
   });
 }
 
-var modify = function(update, user, callback)
+var modify = function(update, user, current,callback)
 {
+  var fullupdate = {};
+  if(update.name)
+  {
+    fullupdate["characters.$.name"] = update.name;
+    fullupdate["current"] = update.name;
+  }
+  if(update.link)
+  {
+    fullupdate["characters.$.link"] = update.link;
+  }
+  if(update.init)
+  {
+    fullupdate["characters.$.init"] = update.init;
+  }
+  console.log("looking for: " +current );
+  console.log(fullupdate);
   db.users.findAndModify({
-    query: {user: user},
-    update: { $set: update }
-  }, function(err){
+    query: {user: user, "characters.name":current},
+    update: {$set: fullupdate}
+  }, function(err,r){
+    console.log(err);
+    console.log(r);
     callback();
   });
 }
@@ -50,10 +83,12 @@ var performUpdate = function(update, user, callback)
 {
   db.users.find({user : user}, function (err, r){
     //console.log(r);
+    console.log(r);
     if (r.length > 0)
     {
       console.log("Modifying");
-      modify(update, user, function (){
+      var current = r[0].current;
+      modify(update, user, current, function (){
         callback(true);
         console.log("Existing user updated");
       });
@@ -63,7 +98,8 @@ var performUpdate = function(update, user, callback)
       update.user = user;
       update.user_lower = user.toLowerCase();
       console.log(update);
-      db.users.save(update, function(){
+      var ent = {current:0, characters:[update]};
+      db.users.save(ent, function(){
         console.log("New User Added");
         callback(false);
       });

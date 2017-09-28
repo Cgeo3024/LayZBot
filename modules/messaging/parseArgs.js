@@ -175,6 +175,19 @@ var initialParse = function(raw, callback)
         content = argVals[0].slice(1);
       }
     break;
+    case "c":
+    case "character":
+    case "characters":
+      eventID = 12;
+      if (argVals.length < 2)
+      {
+        scope = 0;
+      }
+      else {
+        scope = 1;
+        content = argVals[0].slice;
+      }
+    break;
     case ".config":
       eventID = 99;
       content = argVals[0].slice(1);
