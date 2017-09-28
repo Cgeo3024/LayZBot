@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Helper Bot for our DnD Channel",
   "main": "bot.js",
-  "author": "Alt+F7",
+  "author": "Chris George",
   "dependencies": {
     "chai": "^4.1.0",
     "discord.io": "^2.5.1",
@@ -13,9 +13,6 @@
     "ws": "^3.1.0"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
-  },
   "license": "ISC",
   "engines": {
     "node": "6.11.1"
