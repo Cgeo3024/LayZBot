@@ -13,7 +13,7 @@ var allUsers = function(users, callback){
 // formats the result messagge for looking up another user
 var other = function(user, callback){
   console.log(user);
-  var embed = {description : user[0].user + " is ["};
+  var embed = {description : user.user + " is ["};
   callback(formatSingleUserEmbed(embed, user));
 };
 
@@ -24,14 +24,14 @@ var formatSingleUserEmbed = function(embed, user)
   {
     return ({description : "Sorry, that user is not registered with me!", color:15158332});
   }
-  embed.description += user[0].name +"](" + user[0].link + ") ";
+  embed.description += user.name +"](" + user.link + ") ";
   embed.color = randomColor();
   console.log(embed);
   return embed;
 }
 
 var self = function(user, callback){
-  var embed = {title:user[0].user, description: "You are ["};
+  var embed = {title:user.user, description: "You are ["};
 
   callback(formatSingleUserEmbed(embed, user));
 };

@@ -6,8 +6,8 @@ var embed       = require('./modules/messaging/formatEmbed.js');
 var parseArgs   = require('./modules/messaging/parseArgs.js')
 var initManager = require('./modules/data/initManager.js');
 var config      = require('./resources/config.js');
-var pointbuy = require('./modules/pointbuy/pointbuy.js');
-
+var pointbuy    = require('./modules/pointbuy/pointbuy.js');
+var characters  = require('./modules/character/chardetails.js');
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(logger.transports.Console, {
@@ -162,8 +162,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               var added = 0;
               var limit = data.count;
               var silenced = false;
+
               console.log(added);
-              for (var i =0; i < limit; i++)
+              for (var i=0; i < limit; i++)
               {
                 console.log(i);
                 initManager.insert(data.name+ " " + (1+i), data.name, data.init, function(ret){
@@ -180,11 +181,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   break;
                 }
                 });
-              }
-
-              while(added < data.count)
-              {
-                sleep(10);
               }
 
               bot.sendMessage({ to:channelID, message: data.count + " " + data.name + " Added to initaitve!"});
@@ -209,7 +205,41 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   bot.sendMessage({ to:channelID, message: msg});
                 break;
               }
+              case 12:
+                switch(scope){
+                  // lists all characters
+                  case 0:
+                    characters.listAll(user, function(res){
+                      console.log(res);
+                      bot.sendMessage({ to:channelID, embed:{title: user +" plays:", description: res}});
+                    });
+                  break;
+                  // adds a new character
+                  case 1:
+                    characters.addChar(user, data, function(res){
+                      console.log("added");
+                      console.log(data);
+                      characters.listAll(user, function(res){
+                        console.log(res);
+                        bot.sendMessage({ to:channelID, embed:{title: user +" plays:", description: res}});
+                      });
+                    });
+                  break;
+                  //switches to a character
+                  case 2:
+                    characters.switchChar(user, data, function(res){
+                      console.log("switched");
+                      console.log(data);
+                    });
+                  break;
+                  //deletes a character
+                  /*case 3:
+                    characters.delete(user, content, function(res){
 
+                    });
+                  break;*/
+                }
+                break;
             break;
             case 99:
               if (data.length >= 4)

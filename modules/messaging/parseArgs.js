@@ -29,16 +29,16 @@ var initialParse = function(raw, callback)
   var scope = null;
   var flags = parseFlags(argVals.slice(1));
   eventID = 0;
+  console.log(argVals);
+  console.log(flags);
   switch(cmd) {
-
     // the hello message falls through to the help message
     case 'hello':
       content = "Hello! I am a simple helper bot for this DnD Group.\n\n";
     break;
     case 'forget':
     case 'f':
-      console.log(argVals);
-      console.log(flags);
+
       if (flags.self)
       {
         scope = 1;
@@ -179,13 +179,54 @@ var initialParse = function(raw, callback)
     case "character":
     case "characters":
       eventID = 12;
-      if (argVals.length < 2)
+      scope = 0;
+      content = {};
+      console.log(flags.length);
+      if (flags.length > 1)
       {
-        scope = 0;
-      }
-      else {
-        scope = 1;
-        content = argVals[0].slice;
+        eventID = 0;
+        content = "The character command expects exactly one of: \n"
+        + "--add\n"
+        + "--switch\n"
+        + "--forget\n";
+      }else {
+        if(flags.add)
+        {
+            scope = 1;
+            if (flags.name)
+            {
+              content.name = flags.name;
+            }
+            else {
+              eventID = 0;
+              content = "Please enter a name to create a character";
+            }
+
+            if(flags.init)
+            {
+              content.init = flags.init;
+            }
+            if(flags.link)
+            {
+              content.link = flags.link;
+            }
+        }
+
+        if (flags.switch)
+        {
+          console.log("Switching");
+          scope = 2;
+          content = flags.name;
+        }
+        if (flags.forget)
+        {
+          console.log("forgetting");
+          scope = 3;
+          content = flags.name;
+        }
+
+        console.log("?c details");
+        console.log(content);
       }
     break;
     case ".config":
@@ -231,6 +272,7 @@ function parseFlags(raw)
       case("forget"):
       case("f"):
         res.forget = true;
+        res.name = repairName(raw[l], 1);
       break;
       case("add"):
       case("a")  :
@@ -239,6 +281,12 @@ function parseFlags(raw)
       case("overwrite"):
       case("o"):
         res.overwrite = true;
+      break;
+      case("switch"):
+      case("sw"):
+      case("s"):
+        res.switch = true;
+        res.name = repairName(raw[l], 1);
       break;
       case("deep"):
       case("d"):
