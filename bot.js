@@ -198,48 +198,49 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     listtxt += pointbuy.scores[i] + "\n";
                   }
                   bot.sendMessage({ to:channelID, message: listtxt});
-                break;
+                  break;
                 case 1:
 
                   var msg = pointbuy.validate(data);
                   bot.sendMessage({ to:channelID, message: msg});
                 break;
               }
-              case 12:
-                switch(scope){
-                  // lists all characters
-                  case 0:
+              break;
+            case 12:
+              switch(scope){
+                // lists all characters
+                case 0:
+                  characters.listAll(user, function(res){
+                    console.log(res);
+                    bot.sendMessage({ to:channelID, embed:{title: user +" plays:", description: res}});
+                  });
+                break;
+                // adds a new character
+                case 1:
+                  characters.addChar(user, data, function(res){
+                    console.log("added");
+                    console.log(data);
                     characters.listAll(user, function(res){
                       console.log(res);
                       bot.sendMessage({ to:channelID, embed:{title: user +" plays:", description: res}});
                     });
-                  break;
-                  // adds a new character
-                  case 1:
-                    characters.addChar(user, data, function(res){
-                      console.log("added");
-                      console.log(data);
-                      characters.listAll(user, function(res){
-                        console.log(res);
-                        bot.sendMessage({ to:channelID, embed:{title: user +" plays:", description: res}});
-                      });
-                    });
-                  break;
-                  //switches to a character
-                  case 2:
-                    characters.switchChar(user, data, function(res){
-                      console.log("switched");
-                      console.log(data);
-                    });
-                  break;
-                  //deletes a character
-                  /*case 3:
-                    characters.delete(user, content, function(res){
-
-                    });
-                  break;*/
-                }
+                  });
                 break;
+                //switches to a character
+                case 2:
+                  characters.switchChar(user, data, function(res){
+                    console.log("switched");
+                    console.log(data);
+                  });
+                break;
+                //deletes a character
+                /*case 3:
+                  characters.delete(user, content, function(res){
+
+                  });
+                break;*/
+              }
+              break;
             break;
             case 99:
               if (data.length >= 4)

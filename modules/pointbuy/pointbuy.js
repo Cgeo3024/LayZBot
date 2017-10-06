@@ -1,3 +1,5 @@
+var scores = require('./pointbuy.json')
+
 var maxpoints = 27;
 var maxstats = 6;
 var minstats = 6;
@@ -83,5 +85,6 @@ var validate = function(data){
   return msg;
 }
 
+exports.scores    = scores.scores;
 exports.config    = update;
 exports.validate  = validate;
