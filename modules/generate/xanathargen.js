@@ -84,7 +84,7 @@
 
                   if(lifeEventCount > 0)
                   {
-                    outstr += "\n**Life Events**  + ("+ lifeEventCount + ")\n\n";
+                    outstr += "\n**Life Events**  ("+ lifeEventCount + ")\n\n";
 
                     for (var i = 0; i< lifeEventCount; i++)
                     {
@@ -1138,7 +1138,7 @@ function getClass()
     job = "Druid";
   }else if (jobChance > 14)
   {
-    job = "CLeric";
+    job = "Cleric";
   }else if (jobChance > 7)
   {
     job = "Bard";
