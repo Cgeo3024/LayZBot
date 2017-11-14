@@ -321,12 +321,12 @@ function getLifeEvent()
           "more than once, you can choose to have a child instead.";
   } else if (eventChance > 10)
   {
-    ev = "You gained a bit of good fortune. " +getBoon();
+    ev = getBoon();
   } else if (eventChance > 0)
   {
-    ev = "You suffered a tragedy. " +getTragedy();
+    ev = getTragedy();
   } else {
-    ev = "Something truly strange happened to you. " + getWierd();
+    ev = getWierd();
   }
 
   return ev;
@@ -423,11 +423,6 @@ function getTragedy(){
     "from your community. You then either wandered in "+
     "the wilderness for a time or promptly found a new "+
     "place to live.",
-    "A current or prospective romantic partner ofyours"+
-    "died. Roll on the Cause of Death supplemental"+
-    "table to find out how. lf the result is murder, roll a"+
-    "d12. On a 1, you were responsible, whether directly"+
-    "orindirectly.",
   ];
   if (Math.random() >= 0.5)
   {
@@ -499,6 +494,8 @@ function getWierd(){
     "A powerful being granted you a wish, but you "+
     "squandered it on something frivolous.",
   ];
+
+  return wierds[Math.floor(Math.random()*wierds.length)];
 }
 function getBoon(){
   var commoner = getIndividual();
