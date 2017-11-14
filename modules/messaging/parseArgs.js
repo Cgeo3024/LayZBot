@@ -162,6 +162,16 @@ var initialParse = function(raw, callback)
     case 'generate':
     case "g":
       eventID = 10;
+      scope = 0;
+    break;
+    case 'xgen':
+    case 'xg':
+    case 'xanathargenerate':
+      eventID = 10;
+      scope = 1;
+      console.log("Input Content")
+      console.log(argVals);
+      content = argVals[0].slice(1);
     break;
     case "pointbuy":
     case "p":

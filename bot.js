@@ -1,6 +1,7 @@
 var Discord     = require('discord.io');
 var logger      = require('winston');
 var generate    = require('./modules/generate/gen');
+var xgenerate   = require('./modules/generate/xanathargen.js');
 var lookup      = require('./modules/data/lookups.js');
 var embed       = require('./modules/messaging/formatEmbed.js');
 var parseArgs   = require('./modules/messaging/parseArgs.js')
@@ -8,6 +9,7 @@ var initManager = require('./modules/data/initManager.js');
 var config      = require('./resources/config.js');
 var pointbuy    = require('./modules/pointbuy/pointbuy.js');
 var characters  = require('./modules/character/chardetails.js');
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(logger.transports.Console, {
@@ -67,6 +69,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                         X3   | deep RerollX Now handled with a flag in content on case 0
                   9   | Add user to initiaitve with Special syntax
                   10  | generates a random character idea (open-source http://whothefuckismydndcharacter.com/)
+                      | 0 Legacy Generation
+                      | parameteristed xanathar's generation
             */
             case 0:
               bot.sendMessage({to:channelID, message: data});
@@ -187,7 +191,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               recallInitiative(channelID, false);
               break;
             case 10:
-                bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
+              switch(scope){
+                case 0:
+                  bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
+                  break;
+                case 1:
+                  bot.sendMessage({ to:channelID, message: "You should play ... " + xgenerate(data)});
+                break;
+              }
+
             break;
             case 11:
               switch(scope){
