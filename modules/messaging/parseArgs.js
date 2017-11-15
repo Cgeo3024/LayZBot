@@ -275,6 +275,9 @@ var initialParse = function(raw, callback)
         console.log(content);
       }
     break;
+    case '4d6':
+      eventID = 13;
+    break;
     case ".config":
       eventID = 99;
       content = argVals[0].slice(1);

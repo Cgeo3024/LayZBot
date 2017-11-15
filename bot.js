@@ -282,6 +282,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               }
               break;
             break;
+            case 13:
+              bot.sendMessage({ to:channelID, message: rollStats()});
+            break;
             case 99:
               if (data.length >= 4)
               {
@@ -292,6 +295,44 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         });
      }
 });
+
+function rollStats()
+{
+  var stats = [];
+  var text = "```";
+  for (var i = 0; i < 6; i++)
+  {
+    stats.push({min:0, list:[], total:0});
+    var roll = Math.ceil(Math.random()*6);
+    stats[i].min = roll;
+    stats[i].total = roll;
+    stats[i].list.push(roll);
+    for (var j = 0; j < 3; j++) {
+      roll = Math.ceil(Math.random()*6);
+      if (roll < stats[i].min) {
+        stats[i].min = roll;
+      }
+      stats[i].total += roll;
+      stats[i].list.push(roll);
+    }
+    stats[i].total -=  stats[i].min
+    text +="Total: " + stats[i].total;
+    if (stats[i].total < 10)
+    {
+      text += " ";
+    }
+    text += " Rolls: ";
+    for (var k = 0; k < stats[i].list.length; k++)
+    {
+      text += stats[i].list[k] + " ";
+    }
+    text +="\n";
+  }
+  text += "```";
+  console.log("rolled all stats");
+  console.log(text);
+  return text;
+}
 
 function manageRolls(rollType, input, channelID)
 {
