@@ -196,7 +196,35 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
                   break;
                 case 1:
-                  bot.sendMessage({ to:channelID, message: "You should play ... " + xgenerate(data)});
+                  bot.sendMessage({ to:channelID, message: "You should play ... " + xgenerate.player(data)});
+                break;
+                case 2:
+                  var hero = xgenerate.hero();
+                  bot.sendMessage({ to:channelID, message: "Generated NPC... \n" +
+                                  "*Age:* "      +hero.age +"\n"+
+                                  "*Race:* "     +hero.race +"\n"+
+                                  "*Class:* "    +hero.job +"\n"+
+                                  "*Alignment:* "+hero.alignment});
+
+                break;
+                case 3:
+                  var npc = xgenerate.npc();
+                  bot.sendMessage({ to:channelID, message: "Generated NPC... " +"*Age:* "       +npc.age +"\n"+
+                                                                                "*Race:* "      +npc.race +"\n"+
+                                                                                "*Occupation:* "+npc.job +"\n"+
+                                                                                "*Alignment:* " +npc.alignment});
+                break;
+                case 4:
+                  bot.sendMessage({ to:channelID, message: "Generating death ... " + xgenerate.death()});
+                break;
+                case 5:
+                  bot.sendMessage({ to:channelID, message: "Generating boon ... " + xgenerate.boon()});
+                break;
+                case 6:
+                  bot.sendMessage({ to:channelID, message: "Generating adventure ... " + xgenerate.adventure()});
+                break;
+                case 7:
+                  bot.sendMessage({ to:channelID, message: "Generating event ... " + xgenerate.lifeEvent()});
                 break;
               }
 

@@ -225,11 +225,12 @@ function getSupernatural()
           "with no idea how you got there.";
   } else if (supChance > 10)
   {
+    var value = (Math.floor(Math.random()*20) + 50);
     ret = " A devil tempted you. Make a DC 10 Wisdom saving "+
           "throw. On a failed save, your alignment shifts one "+
           "step toward evil (if it‘s not evil already), and you "+
           "start the game with an additional " +
-          Math.floor(Math.random()*20) + 50 +"gp.";
+          value +"gp.";
   } else if (supChance > 5)
   {
     ret = "You saw a demon and ran away before it could do " +
@@ -290,9 +291,10 @@ function getLifeEvent()
     "*Alignment:* "+commoner.alignment;
   } else if (eventChance > 50)
   {
+    var value = Math.ceil(Math.random()*6)
+    +Math.ceil(Math.random()*6);
     ev = "You spent time working on a job related to "+
-    "your background. Start the game with an extra " +Math.ceil(Math.random()*6)
-    +Math.ceil(Math.random()*6) + " gold.";
+    "your background. Start the game with an extra " + value + " gold.";
   } else if (eventChance > 40)
   {
     ev = "You made a friend of an adventurer.\n" +
@@ -339,14 +341,16 @@ function getAdventure(){
 
   if (advChance > 90)
   {
+    var value = Math.ceil(Math.random()*20) + 50;
     ret = "You found a considerable amount of treasure on" +
-          "your adventure. You have  "+
-          Math.ceil(Math.random()*20) + 50 +" gp left from" +
+          "your adventure. You have  "+ value
+           +" gp left from" +
           "your share of it.";
   } else if (advChance > 80)
   {
+    var value = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
     ret = "You found some treasure on your adventure. "+
-          "You have "+ Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6)
+          "You have "+ value
           + " gp left from your share of it.";
   }else if (advChance > 70)
   {
@@ -1523,4 +1527,10 @@ var validateOrReplace = function(arr1, arr2)
   return ret;
 }
 
-module.exports = genStatics;
+module.exports.player = genStatics;
+module.exports.hero   = getAdventurer;
+module.exports.npc    = getIndividual;
+module.exports.death  = death;
+module.exports.boon   = getBoon;
+module.exports.adventure = getAdventure;
+module.exports.lifeEvent = getLifeEvent;

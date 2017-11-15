@@ -173,6 +173,42 @@ var initialParse = function(raw, callback)
       console.log(argVals);
       content = argVals[0].slice(1);
     break;
+    case 'xgenhero':
+    case 'xgh':
+    case 'xh':
+      eventID = 10;
+      scope = 2;
+    break;
+    case 'xgennpc':
+    case 'xgn':
+    case 'xn':
+      eventID = 10;
+      scope = 3;
+    break;
+    case 'xgendeath':
+    case 'xgd':
+    case 'xd':
+      eventID = 10;
+      scope = 4;
+    break;
+    case 'xgenboon':
+    case 'xgb':
+    case 'xb':
+      eventID = 10;
+      scope = 5;
+    break;
+    case 'xgenadventure':
+    case 'xga':
+    case 'xa':
+      eventID = 10;
+      scope = 6;
+    break;
+    case 'xgenevent':
+    case 'xge':
+    case 'xe':
+      eventID = 10;
+      scope = 7;
+    break;
     case "pointbuy":
     case "p":
       eventID = 11;
