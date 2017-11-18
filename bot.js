@@ -196,8 +196,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   bot.sendMessage({ to:channelID, message: "You should play ... " + generate()});
                   break;
                 case 1:
-                  bot.sendMessage({ to:channelID, message: "You should play ... " + xgenerate.player(data)});
-                break;
+                  var generatedPlayer = xgenerate.player(data);
+                  bot.sendMessage({ to:channelID, message: "You should play ... \n"}, function(err, res){
+                    orderMessages(channelID, 0, generatedPlayer);
+                  });
+                  break;
                 case 2:
                   var hero = xgenerate.hero();
                   bot.sendMessage({ to:channelID, message: "Generated NPC... \n" +
@@ -399,6 +402,18 @@ function handleQuery(name, channelID, query, embed)
       });
     }
 
+  });
+}
+// staggers message sending
+var orderMessages = function (channelID, index, messages)
+{
+  if (index >= messages.length)
+  {
+    return;
+  }
+  bot.sendMessage({ to:channelID, message: messages[index]}, function(err, res)
+  {
+    orderMessages(channelID, index +1, messages);
   });
 }
 var sendEmbed = function(embed, channelID){

@@ -15,6 +15,7 @@ var genStatics = function(values)
   var background = null;
   var age = -1;
   var lifeEventCount = 0;
+  var outputList = [];
 
   var outstr = "**Race:**";
 
@@ -96,8 +97,10 @@ var genStatics = function(values)
                 "**Siblings:** " + siblings.count +"\n"+
                 "**Raised By:** " + childhood.raisedBy +"\n"+
                 "**Childhood Home:** " + childhood.home +"\n"+
-                "**Childhood Lifestyle:** " + childhood.lifestyle +"\n"+
-                "\n*I became " + bgArticle + " " + background + " because ...* " + xbackground.history(background) + "\n"+
+                "**Childhood Lifestyle:** " + childhood.lifestyle +"\n";
+  outputList.push(outstr);
+
+  outstr =      "\n*I became " + bgArticle + " " + background + " because ...* " + xbackground.history(background) + "\n"+
                 "\n*I became a " + power + " because ...* " + xclass.history(power) + "\n"+
                 "\n";
   console.log("Printing Class Quirks");
@@ -110,22 +113,24 @@ var genStatics = function(values)
     outstr += "**" +classQuirks[i].title + "**\n";
     outstr += classQuirks[i].text + "\n\n";
   }
+  outputList.push(outstr);
   console.log("Printing Life Events");
 
   if(lifeEventCount > 0)
   {
-    outstr += "\n**Life Events**  ("+ lifeEventCount + ")\n\n";
+    outstr = "\n**Life Events**  ("+ lifeEventCount + ")\n\n";
 
     for (var i = 0; i< lifeEventCount; i++)
     {
       outstr += xevent.event() +"\n\n";
     }
   }
+  outputList.push(outstr);
   console.log("Printing Siblings Details");
 
   if (siblings.count > 0)
   {
-    outstr += "\n**Siblings Details**\n\n";
+    outstr = "\n**Siblings Details**\n\n";
     for (var i = 0; i < siblings.details.length; i++)
     {
       outstr += "Sibling " + (i +1) +":\n"+
@@ -136,9 +141,10 @@ var genStatics = function(values)
     }
     outstr += "\n\n";
   }
+  outputList.push(outstr);
   console.log("String Construction Finished");
 
-  return (outstr);
+  return (outputList);
   /*TODO Age
     Life Events
     siblings
